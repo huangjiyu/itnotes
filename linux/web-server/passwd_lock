@@ -1,0 +1,2 @@
+auth_basic "passwd";  #passwd是使用htpasswd生成的密码
+auth_basic_user_file /var/www/html/.htpasswd;  #密码文件路径

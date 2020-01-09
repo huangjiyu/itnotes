@@ -1,0 +1,13 @@
+gnome extension项目创建：
+
+1. 创建模板
+
+   ```shell
+   gnome-shell-extension-tool -c
+   #gnome-shell-extension-tool --create-extension
+   ```
+
+   按照提示输入相关信息，其会在`HOME/.local/share/gnome-shell/extensions/`下创建模板文件。
+
+   
+
