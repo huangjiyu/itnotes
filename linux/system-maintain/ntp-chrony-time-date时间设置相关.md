@@ -129,11 +129,12 @@ firewall-cmd --reload
 配置`/etc/chrony.conf`示例：
 
 ```shell
-#时钟服务器
+#时钟服务器 （重要）
 server 0.centos.pool.ntp.org iburst
 server 1.centos.pool.ntp.org iburst
-server 127.0.0.1 prefer  #chrony中使用本机时间 127.127.1.1
-allow all
+server 127.0.0.1 prefer  #使用本机时间；prefer项优先级更高
+
+#allow all #192.168.0/24 #允许的客户端（如果作为服务端时设置）
 
 #同步源的层级
 stratumweight 0
@@ -142,9 +143,9 @@ driftfile /var/lib/chrony/drift
 #其将启用一个内核模式，系统时间每11分钟拷贝到实时时钟（RTC）
 rtcsync
 #调整策略：当调整期大于某个阀值时，中前n次的更新中会使用step调整
-makestep 10 3
+makestep 1.0 3
 
-#本地时间的层级：取消该行注释后，将采用本地时间作为标准时间授时给其它客户端
+#本地时间的层级 （将本机作为时间服务器时 该行为重要配置）
 local stratum 10
 
 #允许和禁止与本机同步的客户端
@@ -156,8 +157,8 @@ local stratum 10
 #deny 192.168/16
 
 #限制仅本机使用命令控制chrony服务器
-bindcmdaddress 127.0.0.1
-bindcmdaddress ::1
+#bindcmdaddress 127.0.0.1
+#bindcmdaddress ::1
 
 keyfile /etc/chrony.keys
 commandkey 1
@@ -167,7 +168,7 @@ logchange 0.5
 logdir /var/log/chrony
 ```
 
-以上配置项多为服务端使用，作为户端，一般只设置server即可。
+以上为服务端根据情况配置使用，作为户端，一般只设置server即可。
 
 ```shell
 server master #master为服务端主机名（或使用ip地址）
@@ -177,8 +178,14 @@ server master #master为服务端主机名（或使用ip地址）
 
 **chronyc**是用来监控chronyd性能和配置其参数的用户界面。
 
-```shell
-sudo hwclock -s -u #将rtc时钟时间设为系统时间并使用utc
+``` shell
+#将rtc时钟时间设为系统时间并使用utc
+sudo hwclock -w -u #或--systohc --utc
+#监控客户端的同步情况
+#客户端可执行
+watch -d "chronyc source -v"
+#服务端查看客户端
+watch -d "chronyc clients"
 ```
 
 常用chronyc命令对象（（可直接附在chronyc命令后，也可以进入chronyc命令行界面使用）：
@@ -202,21 +209,20 @@ sudo hwclock -s -u #将rtc时钟时间设为系统时间并使用utc
 配置`/etc/ntpd.conf`示例：
 
 ```shell
-#禁止该主机查询时间
-restrict 192.168.0.251 noquery
-##禁止该网段来源的主机修改时间
-restrict 192.168.0.0 mask 255.255.255.0 nomodify
-
-#限制权限
-restrict 127.0.0.1
-restrict -6 ::1     #ipv6使用
-
 #同步时间的服务器
 #server 0.arch.pool.ntp.org
 #server 1.arch.pool.ntp.org prefer #prefer者优先
+server 127.127.1.0 #采用本机内部时钟
 
-#注意，如果采用本机内部时钟 使用127.127.1.0而非127.0.0.1
-server 127.127.1.0
+#禁止该主机查询时间
+#restrict 192.168.0.251 noquery
+##禁止该网段来源的主机修改时间
+#restrict 192.168.0.0 mask 255.255.255.0 nomodify
+
+#限制权限
+#restrict 127.0.0.1
+#restrict -6 ::1     #ipv6使用
+
 #设置本地时间源的层数（最大15)
 fudge  127.127.1.0 stratum 10
 
@@ -236,7 +242,7 @@ server master #master为服务端主机名（或使用ip地址）
 #查看ntp同步状态
 ntpq -pn
 #监控同步状态 （其中reach一项的值增加到17时同步完成）
-watch ntpq -p
+watch -d "ntpq -pn"
 #手动同步 
 ntpdate <time-server>
 ```

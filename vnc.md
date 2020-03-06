@@ -73,7 +73,7 @@ TigerVNC使用`x0vncserver`，RealVNC有自己的实现，还可以使用`x11vnc
 
 ```shell
 #-display指定使用的物理显示 并指定密码文件（可由vncpasswd生成）
-x0vncserver -rfbauth ~/.vnc/passwd
+x0vncserver -rfbauth ~/.vnc/passwd -display :0
 x0vncserver -display :0 -passwordfile ~/.vnc/passwd  #作用同上
 ```
 

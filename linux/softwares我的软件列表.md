@@ -73,8 +73,8 @@
 
 - 图形化
 
-    -   uget  调用aria2和curl
-
+    -   uget  可调用aria2和curl
+-   ariang-allinone  基于web界面的aria2工具
     -   transmission     支持bt
     -   amule    支持ed2k
     -   pointdownload   支持http, ftp, bt, magnet ,thunder 协议

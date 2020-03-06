@@ -5,7 +5,7 @@
 
 #******** Default display ********
 #===PS
-if [[ -f $HOME/.bash-powerline.sh ]]
+if [[ -s $HOME/.bash-powerline.sh ]]
 then
   . $HOME/.bash-powerline.sh
 else
@@ -71,9 +71,9 @@ function restoreconfigs(){
   do
      if [[ $config == .ssh/config ]]
      then
-        \cp -auv ~/Documents/network/ssh/config ~/.ssh
+        \cp -auv ~/Documents/network/ssh/ ~/.ssh
      else
-       \cp -auv ~/$config ~/
+       \cp -auv ~/Documents/it/itnotes/linux/config-backup/$config ~/
      fi
   done
 }
@@ -156,8 +156,8 @@ elif [[ $(which apt 2>/dev/null) ]]
 then
   alias apt='sudo apt'
   alias orphan='deborphan|xargs sudo apt purge'
-  alias up='sudo apt dist-upgrade'
-  alias aptclean='sudo apt autoremove && sudo apt autoclean'
+  alias up='sudo apt update && sudo apt dist-upgrade'
+  alias aptclean='sudo apt autoremove'
 fi
 
 #---temporary locale---
@@ -269,8 +269,6 @@ alias starwar='telnet towel.blinkenlights.nl'
 #export GTK_IM_MODULE=ibus
 #$export XMODIFIERS=@im=ibus
 #$export QT_IM_MODULE=ibus
-
-export EDITOR='vim'
 
 # my scripts PATH
 [[ -d ~/Documents/scripts ]] && export PATH=~/Documents/scripts:$PATH

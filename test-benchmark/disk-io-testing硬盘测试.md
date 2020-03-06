@@ -1,6 +1,9 @@
 # io监控工具
 
+- atop
+
 - iotop
+
 - iostat
 
 # 测试工具
@@ -67,7 +70,7 @@ fio -ioengine=psync -filename=/share/fiotest -bsrange=4k-1m -fdatasync=1 -rw=wri
 
 iozone可测试项包括：Read, write, re-read,re-write, read backwards, read strided, fread, fwrite, random read, pread,mmap, aio_read, aio_write 。
 
-通常情况下，**测试的文件大小要求至少是系统cache的两倍以上，测试的结果才是真是可信的**。如果小于cache的两倍，文件的读写测试读写的将是cache的速度，测试的结果大打折扣。 
+通常情况下，**测试的文件大小要求至少是系统cache/buffer的两倍以上，测试的结果才是真是可信的**，否则结果失真严重。 
 
 对于NFS等网络文件系统测试，最好启用`-c`参数，另外glusterfs等分布式文件系统测试需使用`-+m`选项测试，具体参看后文。
 
@@ -124,17 +127,17 @@ pacman -Ql iozone 画图。。。
 
   **如果测试文件比内存大，就没有必要使用参数-c**。
 
-- `-e`   测试包括flush (fsync,fflush) 的时间
+- `-e`   测试包括flush (fsync,fflush) 的时间（把内存数据写入存储）
 
   
 
-- `-w`  不要解锁测试时写入的临时文件（不要删除测试文件，可以方便后续测试使用）
+- `-w`  不要解锁测试时写入的临时文件（即不删除测试时写入的文件，可以方便后续测试使用）
   
 - `-W`  在测试过程中，当读或写文件时锁住文件
 
 
 
-- `-+n`  跳过重新读取和重新写入测试来节省时间  
+- `-+n`  跳过重复读/写入  
 
 - `-C`  显示每个线程的吞吐量
 

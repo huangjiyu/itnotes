@@ -200,30 +200,26 @@ autoindex_localtime on;
 
 ```shell
 #username是要添加的用以在加密页面登录的用户 password是对应的密码
-htpasswd -p /etc/nginx/conf.d/lock username password
+htpasswd -b -p /etc/nginx/conf.d/lock username password
 #可以重复添加用户 参照上一条命令
 #删除用户
 htpasswd -D /etc/nginx/conf.d/lock username
 #修改密码参照添加用户的方法 使用一个新密码即可
 ```
 
+- -b 在命令行中一并输入用户名和密码而不是根据提示输入密码
 - -c 创建passwdfile.如果passwdfile 已经存在,那么它会重新写入并删去原有内容.
-
 - -n 不更新passwordfile，直接显示密码
-
 - -m 使用MD5加密（默认）
-
 - -d 使用CRYPT加密（默认）
-
 - -p 使用普通文本格式的密码
 - -s 使用SHA加密
-- -b 命令行中一并输入用户名和密码而不是根据提示输入密码，可以看见明文，不需要交互
 - -D 删除指定的用户
 
 然后在要加密的目录的location中单独[配置](nginx/conf.d/passlock)：
 
 ```nginx
-auth_basic "passwd";  #passwd是使用htpasswd生成的密码
+auth_basic "tips";  #tips是要提示给用户的信息
 auth_basic_user_file /etc/nginx/conf.d/lock;  #密码文件路径
 ```
 

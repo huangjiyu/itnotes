@@ -1,10 +1,10 @@
 [user]
-	name = #your name
-	email = #your email
+	name = levinit
+	email = levinit@outlook.com
 [credential]
 	helper = store
 [core]
-	editor = nano
+	editor = vim
 	quotepath = false
 [color]
 	ui = true
@@ -17,4 +17,8 @@
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
-[alias]
+[cola]
+	spellcheck = false
+	blameviewer = git gui blame
+[diff]
+	tool = xxdiff

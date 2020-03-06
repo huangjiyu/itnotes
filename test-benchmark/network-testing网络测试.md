@@ -1,7 +1,11 @@
-# 监控工具
+# 网络监控工具
+
+- atop
 
 - iftop
+
 - nethogs
+
 - nload
 
 - [mtr](#mtr)
@@ -15,10 +19,6 @@
 ### ping
 
 `ping <host>`
-
-### ibping
-
-Infiniband 网络测试，一般附带在Infiniband套件中，比通常的Ping功能更多。
 
 ### curl
 
@@ -70,7 +70,7 @@ mtr --report -c 10 -n z.cn  #检测z.cn的traceroute
 
   ```shell
   iperf -s [-p port] [-i 2]  #p监听的端口 i报告刷新时间间隔
-  iperf -c <server> [-p port] [-i 2] [-t 10]  #t测试总时间
+  iperf -c <server> [-n filesize] [-p port] [-i 2] [-t 10]  #t测试总时间
   ```
 
 - netperf
@@ -83,5 +83,42 @@ mtr --report -c 10 -n z.cn  #检测z.cn的traceroute
   netperf -H <server> [-p port] [-m send_data_size] [-l total_time] #m发送数据大小  l测试总时间
   ```
 
-  
+
+## infiniband测试
+
+- ibping 一般附带在Infiniband套件中，比通常的Ping功能更多。
+
+- 查看ib信息
+
+  - `ibnodes`  同一网络中的节点信息
+  - `ibstat`或`ibstatus`  基本信息和状态
+  - `ibv_devices`  ib卡GUID信息
+
+- 带宽和延迟测试`ib_send_bw` 和 `ib_send_lat` 
+
+  - 确保一台服务器已经开启opensmd服务，所有服务器启用了openibd服务，使用`ibstat`查看ib卡是否已经就绪，节点互相可ping或ibping通信。
+
+  - 一台服务器作为server，执行：
+
+    ```shell
+    #-c连接方式（可选） 
+    #-d 指定设备(可选，多个ib卡时使用)
+    #-i 端口（可选，多个端口连接且需要测试指定端口时使用）
+    #ib_send_bw -a -c UD -d mlx5_0 -i 2
+    ib_send_bw 
+    ```
+
+  - 一台服务器为客户端，执行：
+
+    ```shell
+    ib_send_bw <server>  #server的hostname或ip等
+    ```
+
+- qperf  测试RDMA性能
+
+  - 服务端 `qperf`
+
+  - 客户端`qperf <server> tcp_bw`  (ud_bw测试udp）
+
+    bw带宽，lat延迟。
 

@@ -661,6 +661,10 @@ ssh命令中使用参数`-v`可输出详细的调试信息
 
 - 目标服务器上无该帐号，常见原因是目标服务器使用某些用户信息同步工具（如nis），但是目标服务器的相关服务（如nis的ypbind服务未启动），因而找不到该帐号。
 
+- `System is booting up. See pam_nologin(8)`
+
+  删除`/var/run/nologin`或`/etc/nologin`或`/var/nologin`或`/run/nologin`等。
+
 - ` REMOTE HOST IDENTIFICATION HAS CHANGED` 远程主机公钥未能通过主机密钥检查
 
   客户端首次登录ssh服务器时，客户端会记录服务器的公钥信息到`~/.ssh/known_hosts`（已知主机列表）文件中，每个主机一行。
