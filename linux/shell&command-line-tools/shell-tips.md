@@ -125,19 +125,25 @@
     echo "new_pwd" | passwd --stdin [username]
     ```
 
-  - chpasswd 读取文件
+  - chpasswd 读取文件或标准输入
 
     创建一个含有用户名和密码的文件，每行一个用户信息，使用`:`分隔用户名和密码，形如`username:password`，例如该文件为`/tmp/pwds`，内容为：
 
-    ```txt
-    root:123456
-    user1:123456
-    ```
-
+    > root:123456
+    > user1:123456
+    
     使用chpasswd读取该文件：
 
     ```shell
-    chpasswd < /tmp/pwds
+  chpasswd < /tmp/pwds
+    ```
+    
+    从标准输入读取：
+    
+    ```shell
+    chpasswd <<EOF
+    user1:pwd1
+    EOF
     ```
 
 - 列出以`-`开头的文件，使用`--`

@@ -1,7 +1,7 @@
 ﻿#!/bin/sh
-##need root
 
 #repo
+
 echo '
 [archlinuxcn]
 #Server = http://repo.archlinuxcn.org/$arch
@@ -11,6 +11,7 @@ SigLevel = Optional TrustAll
 Server = https://mirrors.ustc.edu.cn/blackarch/$repo/os/$arch' >> /etc/pacman.conf
 
 sed -i "s/^#Color/Color/" /etc/pacman.conf
+[[ $(grep ILoveCandy /etc/pacman.conf) ]] || sed -i "/Color/ a ILoveCandy" /etc/pacman.conf
 sed -i "s/^#VerbosePkgLists/VerbosePkgLists/" /etc/pacman.conf
 
 pacman -Syy --noconfirm
@@ -63,13 +64,13 @@ pacman -S shotwell gimp rhythmbox spotify totem gst-plugins-ugly gst-libav grilo
 pacman -S gnome-software gnome-software-packagekit-plugin --noconfirm
 
 # themes
-pacman -S arc-gtk-theme materia-gtk-theme numix-circle-icon-theme-git papirus-icon-theme --noconfirm
+#pacman -S arc-gtk-theme materia-gtk-theme numix-circle-icon-theme-git papirus-icon-theme capitaine-cursors --noconfirm
 # yay -S xcursor-numix
 
 # yay -S canta-gtk-theme-git
 
 # shell extensions
-pacman -S gnome-shell-extensions gnome-shell-extension-topicons-plus-git gnome-shell-extension-dash-to-dock-git capitaine-cursors --noconfirm
+pacman -S gnome-shell-extensions gnome-shell-extension-topicons-plus-git gnome-shell-extension-dash-to-dock-git --noconfirm
 
 # arhive
 pacman -S expect --noconfirm

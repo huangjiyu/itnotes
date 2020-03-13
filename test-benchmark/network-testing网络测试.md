@@ -88,6 +88,17 @@ mtr --report -c 10 -n z.cn  #检测z.cn的traceroute
 
 - ibping 一般附带在Infiniband套件中，比通常的Ping功能更多。
 
+  - 服务端 `ibping -S`
+    获取服务端的`port_lid`
+
+    ```shell
+    ibv_devinfo
+    #port_lid=$(ibv_devinfo|grep port_lid|grep -oE [0-9]+)
+    ```
+    
+  - 客户端 `ibping -L <server port_lid>`
+
+
 - 查看ib信息
 
   - `ibnodes`  同一网络中的节点信息

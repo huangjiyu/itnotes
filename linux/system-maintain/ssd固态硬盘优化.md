@@ -105,7 +105,16 @@ tmpfs /tmp      tmpfs nodev,nosuid,size=6G          0 0
 - firefox
 
   1. 在地址栏中输入 about:config 进入高级设置页
-  2. 点击右键新建一个 String ， name 为 `browser.cache.disk.parent_directory` ， value 为 `/dev/shm/firefox`。
+
+  2. 新建一个 String 
+
+     name 为 
+
+     > browser.cache.disk.parent_directory
+
+     value为 
+
+     > /dev/shm/firefox
 
 - Chromium（或Chrome）
 

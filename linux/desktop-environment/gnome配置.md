@@ -16,7 +16,9 @@ shell扩展安装来源：
 
 扩展推荐：
 
-- dash to dock    可对dock进行多项功能和外观的设置
+- dash to pannel  可融合顶部pannel和dash
+
+- dash to dock    可将启动菜单按钮及图标防止到自定义的dock中
 
 - user-theme    启用后可自定义shell主题
 
@@ -49,8 +51,6 @@ shell扩展安装来源：
 - weather    天气显示
 
 - easyscreencast     截屏录屏
-
-- screenshot    截屏
 
 - audio-output-switcher    切换音频输出
 
