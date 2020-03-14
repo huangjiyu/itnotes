@@ -10,18 +10,19 @@ Shell 是一个用 C 语言编写的程序，Shell 既是一种命令语言，�
 >
 > Ken Thompson 的 sh 是第一种 Unix Shell，Windows Explorer 是一个典型的图形界面 Shell。
 
-- shell分类
-   - Bourne：常见的是sh(Bourne Shell)和bash(Bourne Again Shell)，还有fish、zsh等等
-   - C：cshell、tcsh（BSD的Unix)
+## shell分类
 
-  以下以bash为默认shell。
+- Bourne：常见的是sh(Bourne Shell)和bash(Bourne Again Shell)，还有fish、zsh等等
+- C：cshell、tcsh（BSD的Unix)
 
-- shell查看
+本文以bash为基础。查看当前shell
 
-  ```shell
-  echo $SHELL    #查看当前使用的shell
-  cat /etc/shells    #查看当前系统支持的shell
-  ```
+```shell
+echo $SHELL    #查看当前使用的shell
+cat /etc/shells    #查看当前系统支持的shell
+```
+
+## bash shell脚本文件
 
 - 扩展名sh：脚本文件**可以不使用扩展名** （但是使用扩展名sh，shell可以为代码提供颜色高亮）。
 
@@ -33,18 +34,49 @@ Shell 是一个用 C 语言编写的程序，Shell 既是一种命令语言，�
 
 - 执行脚本：
 
-  - 脚本有可执行权限：`./file.sh``
-  - 脚本无可执行权限：``bash file.sh`
+  - 脚本有可执行权限：`./file.sh`
+  - 脚本无可执行权限：`bash file.sh`
 
-- 命令别名alias
+- 命令别名alias和type
 
-  示例：`alias ll='ls -al --color=auto'`  使用ll别名替代`ls -al --color=auto`这条命令，仅临时生效。
+  - alias 为某个命令设置别名
+  - type 查看某个别名命令（如果它被alias定义过）对应的内容
 
-  可以在配置文件如`~/.bashr`中使用alias设置别名，使得该别名在当前用户下一直生效。
+  示例：
 
-  添加别名后，使用`source ~/.bashrc`可使其立即生效。
+  ```shell
+  alias ll=`ls -al --color=auto`  #执行ll就等于执行ls -al --color=auto
+  type ll  #查看ll对应的命令内容 ls -al --color=auto
+  ```
 
 - 命令优先级顺序：绝对/相对路径执行命令 > 别名 > bash内部命令 > $PATH环境变量定义的目录查找顺序的第一个命令 。
+
+- bash相关配置文件的执行顺型，**一般是**（注意：以下某些文件可能缺失）：
+
+   1. `/etc/profile/`
+   2. `/etc/profile.d/`下面的文件（具体要看`/etc/profile`中的相关代码）
+   3. `$HOME/.bash_profile`
+   4. `$HOME/.bash_login`
+   5. `$HOME/.profile`
+   6. `$HOME/.bashrc`
+
+## bash shell运行模式
+
+- 登录
+- 交互（普通的输入模式）
+- 非交互（如直接运行某个脚本）
+
+```shell
+echo $-	
+```
+
+可能输出的是`himBH`：
+
+> - `h`: 以*Hash*方式缓存环境变量`$PATH`中的可执行文件，用来加速命令执行。
+> - `i`: 表示*Interactive*，当前shell是可交互的。
+> - `m`: 启用*Job control*，Bash的工作控制功能。
+> - `B`: 启用*Brace expansion*，使得shell可以展开`*`，`?`这些形式的命令。
+> - `H`: 启用*History substitution*，Bash的历史机制啦，`history`，`!`这些。
 
 # 基础
 
@@ -567,6 +599,7 @@ source ~/.bashrc
 | $?         | 返回最后一次执行的命令返回的状态码（0执行正确，1执行错误） |
 | $$         | 脚本运行的当前进程号（PID）                                |
 | $!         | 后台运行的最后一个进程的进程号（PID）                      |
+| $-         | 当前shell的参数                                            |
 
 附常用状态码：
 - 0 	命令成功结束
