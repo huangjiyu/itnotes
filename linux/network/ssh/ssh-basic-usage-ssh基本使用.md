@@ -203,6 +203,24 @@ ssh -t <host> 'cd /tmp;bash'
 vim scp://user@host[:port]//path/to/file
 ```
 
+# X转发
+
+转发远程主机上应用程序的图形界面到本机。X转发的要求：
+
+- 服务端
+  - 使用Xorg（而非wayland），装有xauth。
+  - sshd_config配置中开启`ForwardX11 yes`。
+  - 有显示设备可用。（`$DISPLAY`有值，可查看`Xorg`的log）
+- 客户端
+  - 有X server（windows需要安装x实现如Xming等）
+
+```shell
+ssh -X user@host
+firefox  #打开远程主机的firefox，在本机展示图形界面
+```
+
+提示，客户端中`/etc/ssh/ssh_config`或`~/.ssh/config`设置`ForwardX11 yes`，即使不使用`-X`参数，页将默认为ssh连接开启X11转发。
+
 # 端口转发
 
 > 隧道是一种把一种网络协议封装进另外一种网络协议进行传输的技术。
@@ -476,11 +494,12 @@ scp -P 999 ~/.ssh/id_rsa.pub root@ip:/root.ssh/authorized_keys
 
 需要安装有`sshfs`。
 
-挂载示例：
-
 ```shell
-#sshfs [user@]host:[dir] <mountpoint> [options]
+#sshfs [user@]host:[dir] <mountpoint> [options] #挂载
 sshfs ueser1@host1:/share /share -C -p 2333 -o allow_other
+
+#fusermount -u <mount-point>  #卸载
+fusermount -u /share
 ```
 
 常用选项有：
@@ -496,13 +515,6 @@ sshfs ueser1@host1:/share /share -C -p 2333 -o allow_other
 
 ```shell
 user@host:/remote/folder /mount/point  fuse.sshfs noauto,x-systemd.automount,_netdev,users,idmap=user,IdentityFile=/home/user/.ssh/id_rsa,allow_other,reconnect 0 0
-```
-
-卸载示例：
-
-```shell
-#fusermount -u <mount-point>
-fusermount -u /share
 ```
 
 # 安全策略

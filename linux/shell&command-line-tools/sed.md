@@ -325,7 +325,8 @@ sed -i '2!d' filename #除了第二行外均删除
 sed  -i -e '1a hello' -e '2i world' filename  #第一行后插入 第2行前插入
 sed -i -e '1d' -e '2c new-world' filename  #删除第一行 替换第2行
 
-sed -s '/^test/{n;d}'  #删除以test开头的行的下一行
+sed -s '/^test/{n;d}' filename #删除以test开头的行的下一行
+sed -i 'N;$ d' filename #删除倒数第二行
 ```
 
 ## 分支和测试

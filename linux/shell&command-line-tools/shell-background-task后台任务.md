@@ -1,3 +1,5 @@
+[TOC]
+
 # 任务管理
 
 直接执行一个命令即在前台运行一个任务：
@@ -12,6 +14,14 @@ ping z.cn
 ping -c 99 z.cn &
 #可以将输出信息定向到指定文件，避免输出信息在终端干扰后续操作
 ping -c 99 z.cn > ping.log &
+
+#将整个for循环/while循环放入后台 在done后面添加&
+for i in {1..10}
+do
+sleep 1
+echo $i
+done &
+echo '---'
 ```
 
 使用`jobs`命令可以查看当前终端的任务列表，常用选项：
@@ -64,13 +74,13 @@ ping -c 99 z.cn > ping.log &
 - 让进程忽略 HUP 信号
 - 让进程运行在新的会话里从而成为不属于该终端（执行命令的终端）的子进程
 
-## 保持后台运行的方法
+## 任务后台运行的方法
 
 - `&`后台进程脱离当前shell
 
   `&`后台运行的进程为当前shell的子进程，如果当前shell进程被直接杀死——接收到`SIGHUP`信号（除了直接kill进程外，在图形界面中直接关闭终端模拟器程序以及网络中断也会收到该信号），后台子进程将因为父进程退出而退出。
 
-  如果在**提交`&`后台命令后**，**使用exit（或<kbd>ctrl</kbd>  ）退出当前终端**，该后台进程就会脱离当前shell的父进程将变成进程号为`1`的进程的子进程，从而**进程保持运行**。
+  如果在**提交`&`后台命令后**，**使用exit（或<kbd>ctrl</kbd> <kbd>d</kbd> ）退出当前终端**，该后台进程就会脱离当前shell的父进程将变成进程号为`1`的进程的子进程，从而**进程保持运行**。
 
   ```shell
   ping z.cn > ping.log &
@@ -129,6 +139,7 @@ ping -c 99 z.cn > ping.log &
   disown选项：
 
   - `-a`	如果不提供 JOBSPEC 参数，则删除所有任务。
+  
 - `-h`	标识每个 JOBSPEC 任务，从而当 shell 接收到 SIGHUP信号时不发送 SIGHUP 给指定任务。
   
   - `-r`	仅删除运行中的任务。
@@ -138,6 +149,139 @@ ping -c 99 z.cn > ping.log &
   用于大量运行后台任务的场景，功能强大。
 
 - 此外，对于要时刻在后台运行的进程，尤其是希望其在系统启动后总是自行后台运行，可使用systemd或crontab。
+
+# 多后台任务控制
+
+模拟多线程，Shell中没有真正意义的多线程，可启动多个后端进程，最大程度利用cpu性能。
+
+## wait 进程阻塞--等待后台任务完成
+
+需要等待后台任务完成后再执行后续任务的场景。
+
+`wait`等待作业号或者进程号制定的进程退出，返回最后一个作业或进程的退出状态状态。
+
+如果没有指定参数，则等待所有子进程的退出，其退出状态为0。
+
+shell中等待使用wait，不会等待**调用函数中的子任务**；在函数中使用wait，则只等待函数中启动的后台子任务。（类似其他编程语言的多线程编程）
+
+示例：
+
+```shell
+for f in $(ls -a)
+do
+{
+  chmod 755 $f
+  cp $f /tmp/ -av
+}& #将放入后台 相当有新开一个线程
+done
+wait  #等待以上所有任务（放入后台的任务）执行完毕后才会执行下面的命令
+echo "done at $(date)" >> /tmp/copy.log
+```
+
+## 并发任务数量控制
+
+为了避免后台任务过多（操作系统压力过大）而需要控制后台任务数量的场景。
+
+### xargs控制
+
+xarags选项：
+
+- `-P <N>`  指定运行后面命令的进程数量（默认为1），0时表示尽可能地大；
+
+- `-n 1`   指定每次使用的传入参数（管道符传来的参数）的数量，默认是所有参数。
+
+  控制并发任务数量的场景下应该将其设置为1。
+
+  ```shell
+  echo {1..3}|xargs #打印1 2 3到一行 一次使用了所有传入参数
+  echo {1..3}|xargs -n 1 #打印3行，分别是1,2,3，一次使用1个参数
+  ```
+
+- `-I {}`  指定将xargs会将传入参数赋予某个名称，一般约定习惯命名为`{}`，其他命令可直接使用`{}`（可任意起名）
+
+  ```shell
+  echo {1..3}|xargs -n 1 -I {} echo "get arg {}"
+  ```
+
+  
+
+```shell
+thread_num=5
+all_num=100
+
+seq 1 ${all_num} | xargs -n 1 -I {} -P ${thread_num} sh -c "echo dosomething;sleep 1;echo -----"
+
+wait
+echo -e "end"
+```
+
+
+
+### fifo有名管道控制
+
+```shell
+fifofile="/tmp/$$.fifo"  #$$为当前shell的pid
+mkfifo $fifofile
+exec {fdnum}<>$fifofile #让系统分配一个fd索引值
+#exec 6<>$fifofile  #也可以为fifofile的文件手动指定一个描述符6
+thread_num=5
+
+for ((i=0;i<${thread_num};i++));do  #为进程创建相应的占位
+    echo  #为进程创建相应的占位
+done >&$fdnum  #将占位信息写入管道$fdnum
+
+for j in {1..50}
+do
+#每次执行read -u$fdnum命令，将从FD6中减去一个换行符号\n，然后向下执行
+#当$fdnum中没有回车符，就停止，从而实现线程数量控制
+read -u$fdnum
+{
+  sleep 1  #换成要执行的代码，这里模拟假设普通顺序执行时 每一条代码执行要花费1s
+  echo "$j...pid is $$"
+  echo >&$fdnum  #当任务执行完后，会释放管道占位，所以补充一个占位
+}& #将进程放入后台
+done
+
+wait
+echo "done at $(date)" >> /tmp/copy.log
+# exec $fdnum>&-  #关闭标识符
+```
+
+有名管道和无名管道：
+
+- 无名管道`|`：`ps aux | grep ping`
+
+- 有名管道：`mkfifo /tmp/fd1`  由`mkfifo`创建（fifo first input first output），如果管道内容为空，则阻塞。示例：
+
+  1. 打开一个终端，输入执行：
+
+     ```shell
+     mkfifo /tmp/fd1; cat /tmp/fd1; echo "oooh, done!"
+     ```
+
+     将发现echo 内容没有输出，当前shell处于阻塞状态，因为没向/tmp/fd1写入过内容
+
+  2. 新开一个终端，输入执行：
+
+     ```shell
+     echo "unlock" >> /tmp/fd1 #随便输入什么内容都行
+     ```
+
+     发现前一个终端阻塞解除，执行了后面echo的内容。
+
+文件描述符(file descriptor)：
+
+> linux为了实现一切皆文件的设计哲学，不仅将数据抽象成了文件，也将一切操作和资源抽象成了文件，比如说硬件设备，socket，磁盘，进程，线程等。
+
+内核（kernel）利用文件描述符（file descriptor）来访问文件，每打开或创建一个文件，内核就会向进程返回一个fd，fd是一个非负的整数。
+
+习惯上，
+
+- 标准输入（standard input）的文件描述符是 0
+- 标准输出（standard output）是 1
+- 标准错误（standard error）是 2
+
+3以后对应打开的文件，使用`ulimit -n`可查看一个进程可打开的文件描述符数量。
 
 # 附
 

@@ -1,8 +1,94 @@
-一些Linux常用的文本处理工具。
-
----
-
 [TOC]
+
+# 临时文件mktemp
+
+由系统随机起名，一般回存放于`/tmp`下。
+
+```shell
+testfile=$(mktemp)
+echo "test test" > $testfile
+cat $testfile  #test test
+```
+
+# 替换和删除内容
+
+## 将换行转换为实际的`\n`字符
+
+示例，欲将文件file
+
+>line1
+>
+>line2
+
+变成
+
+>line1\nline2
+
+在文本中的换行符号表现为换行，示例将file文件的换行符号变成实际的`\n`字符（无特殊意义），所有行文本归为一行：
+
+- sed模式空间处理
+
+  ```shell
+  #tag只是一个自定义的标记名
+  sed ":tag;N;s/\n/\\\n/;b tag" file
+  ```
+
+- 利用echo输出自动去掉换行符
+
+  echo不使用-e时将忽略`\n`换行
+
+  ```shell
+  #$表示最后一行   $ !表示除了最后一行的行
+  #行末替换成\n字符 （注意转义），再echo输出
+echo $(sed  "$ !  s/$/\\\n/" file) > file
+  ```
+
+## 删除空白行
+
+或者说替换空白行内容为空字符。
+
+- tr   只打印到标准输出（可重定向保存）
+
+  ```shell
+  cat file | tr -s '\n'
+  ```
+
+- sed  使用-i参数可以直接编辑并存储
+
+  ```shell
+  sed "/^$/d" file
+  sed -i "/^$/d" file
+  ```
+
+- awk  只打印到标准输出 （可重定向保存）
+
+  ```shell
+  awk '{if($0!="") print}' file
+  awk '{if(length!=0) print $0}' file
+  ```
+
+- grep  只打印到标准输出 （可重定向保存）
+
+  ```shell
+  grep -v "^$" file
+  ```
+
+# 更新时间戳touch
+
+```shell
+touch <file> #如果file不存在将创建file
+touch -c <file> #或--no-create 　不建立任何文档
+```
+
+如果文件不存在则创建；如果已经存在将更新该文件/目录的时间戳，包括：
+
+- atime：最后访问时间，文件被读取或执行时更新。
+- mtime：最后内容修改时间，文件内容修改（并保存）后更新。
+- ctime：最后状态改动时间，文件属性修改后更新（如所属者、权限）。
+
+可使用相关参数修改某一个时间戳。
+
+提示`stat <file>`可查看某个文件的时间戳信，`stat`和`ls`命令不会更新文件的atime。
 
 # cat/more/less/tail/head
 
@@ -31,15 +117,19 @@ cat /etc/enviroment -n -E  #查看文件显示行号和行尾$符号
 cat /dev/null > file  #清空文件内容可以将/dev/null写入到指定文件中
 ```
 
-### tac和rev
+## tac和rev内容倒序
 
-`cat`是正序按行打印文件内容，而`tac`（cat反过来）倒序按行打印文件内容。
+`cat`是正序按行打印文件内容，而`tac`（cat反过来）**倒序按行打印**文件内容（行内文字顺序不变）。
 
 `rev`每行内容倒序打印。
 
 ## more和less阅读文件内容
 
-`cat`读取文件时会全部打印出所有内容的，而`more`和`less`则进入浏览器模式，在阅读长文档时比cat更有优势，支持上下翻页，`less`比`more`功能更多一些，可使用`--hlep`参数查看使用帮助。阅读模式下常用按键：
+`cat`读取文件时会全部打印出所有内容的，而`more`和`less`则进入浏览器模式，在阅读长文档时比cat更有优势，支持按页阅读和查找功能。
+
+`less`比`more`功能更多一些。more只能使用Enter和Space向后翻页，less支持前后翻页，支持vim风格的移动(使用`hjkl`等按键)；less不必读整个文件，加载速度比more更快；less退出后shell不会留下刚显示的内容，而more会。
+
+less阅读模式下常用按键：
 
 - `space`  下翻页
 - `b`  上翻页
@@ -92,40 +182,6 @@ tail -c 10 file    #显示file文件最后10个字符
  column -t -s ":" /etc/passwd
  mount|column  -t
 ```
-
-# seq序列化输出
-
-> **seq命令**用于产生从某个数到另外一个数之间的所有整数。
-
-```shell
-seq [选项]... 尾数
-seq [选项]... 首数 尾数
-seq [选项]... 首数 增量 尾数
-```
-
-如果不指定首数，则首数为1，如果不指定增量，则增量也为1。
-
-常用选项
-
-- `-f`, `--format=格式`        使用printf 样式的浮点格式
-- `-s`, `--separator=字符串`   使用指定字符串分隔数字（默认使用：`\n`）
-- `-w`, `--equal-width`        在数字添加0补充位数 使得宽度相同
-
-示例
-
-```shell
-seq -w 99 101
-```
-
-> 099
-> 100
-> 101
-
-```shell
-seq -s "" 5  #无分隔符 
-```
-
-> 12345
 
 # sort行排序
 
@@ -244,7 +300,7 @@ cut -d ':' -f 1,3 /etc/passwd #查看所有用户及其id
 > 1
 
 ```shell
-paste -d ':' a b  #将a内容列合并到b 显然如下
+paste -d ':' a b  #将a内容列合并到b
 ```
 
 > girl:0
@@ -336,11 +392,13 @@ cat <file> | wc  #输出的三列内容为：行数 单词数 字节数
 
 ```shell
 grep 'Hz'  /proc/cpuinfo  #显示cpu信息
+grep -ri test /tmp/  #在/tmp目录下所有文件中查找test字符
 ip addr | grep -o -E '1[^2][0-9?](\.[0-9]{1,3}){3}\/' -o | grep -o -E '1[^2][0-9?](\.[0-9]{1,3}){3}' --color  #本机内网ip
 grep -o -E '\b[0-9]{1,3}(\.[0-9]{1,3}){3}\b' /etc/resolv.conf  #查看DNS服务器的IP地址
 ```
 
 # 流编辑器：sed和awk
 
-- [sed](sed.md)
-- [awk](awk.md)
+## [sed](sed.md)
+
+## [awk](awk.md)

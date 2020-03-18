@@ -1,4 +1,5 @@
 #!/bin/sh
+
 #By Levin   levinit.github.io
 #If not running interactively, don't do anything
 [[ $- != *i* ]] && return
@@ -276,4 +277,5 @@ RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup
 #npm -g list --depth=0
 alias npmlistg='sudo npm -g list --depth=0 2>/dev/null'
 alias npmtaobao=' --registry=https://registry.npm.taobao.org'
-
+##
+#

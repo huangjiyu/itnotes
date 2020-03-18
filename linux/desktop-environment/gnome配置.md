@@ -22,6 +22,8 @@ shell扩展安装来源：
 
 - user-theme    启用后可自定义shell主题
 
+- dynamic top bar  顶部栏动态透明
+
 - drop down terminal    下拉式终端
 
 - topicons plus    顶部栏显示程序托盘图标
@@ -78,9 +80,9 @@ shell扩展安装来源：
 
 [gnome-look](gnome-look.org)或源中可下载一些主题图标，也可使用[ocsstore](https://www.linux-apps.com/p/1175480/)下载，一些主题如：
 
-- gtk界面主题：arc materia canta paper vertex
-- icon图标主题：numix-circle papirus paoranchelo flat-remix paper luv moka
-- cursor鼠标主题：osx-elcap capitaine numix
+- gtk界面主题：arc materia canta paper vertex  vimix
+- icon图标主题：numix-circle papirus paoranchelo zafiro flat-remix paper luv moka
+- cursor鼠标主题：osx-elcap capitaine numix breeze
 
 查找以上资源时，以提供的关键字加类型名称进行搜寻，例如鼠标主题numix则搜索`numix cursor`，界面主题arc则搜索`gtk arc`。
 
