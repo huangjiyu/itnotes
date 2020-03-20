@@ -1,4 +1,4 @@
-"tab缩进
+"tab宽度
 set tabstop=2
 "格式化时制表符占用空格数
 set shiftwidth=2
@@ -16,6 +16,10 @@ set cindent
 "根据类型格式缩进
 filetype indent on
 
+"重置clipboard，让y p等可直接操作"+寄存器（系统剪切板）而无需使用"+y "+p等命令
+"需要支持+clipboard 查看vim --version|grep +clipboard
+set clipboard^=unnamed
+
 "语法高亮 syntax highlight
 syntax on
 "代码折叠 code folding
@@ -24,14 +28,22 @@ set foldenable
 "根据语法syntax|手动manual|根据表达式epxr|根据未更改内容diff|根据标志marker|根据缩进indent
 set foldmethod=syntax
 "启动 vim 时关闭折叠 folding when vim launch
-"set nofoldenable
+set nofoldenable
 "设置键盘映射，通过空格设置折叠 folding keymap
 "nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
-"浅色显示当前行
-autocmd InsertLeave * se nocul
-"用浅色高亮当前行
-autocmd InsertEnter * se cul
+"浅色显示当前列 cursorcolumn cuc
+"autocmd InsertLeave * set cursorcolumn
+set cursorcolumn
+"高亮当前行 cursorline cul
+"utocmd InsertEnter * set cursorline
+set cursorline
+"设置高亮行的配色 cterm-原生vim ctermfg和cterbg终端vim guifg和guibg是gui的vim  取值为NONE表示自动
+"颜色可搭配light或dark，颜色：red（红），white（白），black（黑），green（绿），yellow（黄），blue（蓝），purple（紫），gray（灰），brown（棕），tan(褐色)，cyan(青色)
+"highlight CursorLine   cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
+"highlight CursorColumn   cterm=NONE ctermbg=lightyellow  ctermfg=red guibg=NONE guifg=NONE
+"高亮选中的区块visual block
+highlight Visual ctermbg=white ctermfg=brown gui=none
 
 "文件类型识别
 filetype on
@@ -55,7 +67,7 @@ set autoread
 "禁止生成临时文件
 set nobackup
 "允许鼠标操作
-"set mouse=a
+set mouse=a
 
 "魔术 (设置元字符要加反斜杠进行转义)
 "magic(\m模式)除了 $ . * ^ 之外其他元字符都要加反斜杠
@@ -83,13 +95,6 @@ set hlsearch
 set ignorecase smartcase
 set gdefault
 
-"配色主题
-"colorscheme molokai
-"背景色
-"set background=dark
-"颜色 256色
-set t_Co=256
-
 "去除vi的一致性
 set nocompatible
 
@@ -98,13 +103,24 @@ set fileencoding=utf-8
 "打开文件后可识别的编码格式
 set fileencodings=utf-8,gb18030,gb2312,gbk,big5
 
+"配色主题 可使用vundle安装
+"colorscheme molokai
+"背景色
+"set background=dark
+"颜色 256色
+set t_Co=256
+
+"=====vundle 插件管理工具=====
+"git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+":PluginInstall
+
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
-"=====vim plugins====="
+"-----vim plugins====="
 "主题
 "Plugin 'tomasr/molokai'
 
@@ -116,6 +132,9 @@ Plugin 'scrooloose/nerdtree'
 
 "语法高亮
 Plugin 'vim-syntastic/syntastic'
+
+"快速移动
+Plugin 'easymotion/vim-easymotion'
 
 "自动补全
 Plugin 'Shougo/neocomplete.vim'
@@ -152,6 +171,22 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
+
+"=====easymotion
+map <Leader>f{char} to move to {char}
+map  <Leader>f <Plug>(easymotion-bd-f)
+nmap <Leader>f <Plug>(easymotion-overwin-f)
+
+" s{char}{char} to move to {char}{char}
+nmap s <Plug>(easymotion-overwin-f2)
+
+" Move to line
+map <Leader>L <Plug>(easymotion-bd-jk)
+nmap <Leader>L <Plug>(easymotion-overwin-line)
+
+" Move to word
+map  <Leader>w <Plug>(easymotion-bd-w)
+nmap <Leader>w <Plug>(easymotion-overwin-w)
 
 "=====neocomplete"
 " Disable AutoComplPop.
@@ -198,7 +233,7 @@ inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
 "inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
 
 " AutoComplPop like behavior.
-"let g:neocomplete#enable_auto_select = 1
+let g:neocomplete#enable_auto_select = 1
 
 " Shell like behavior(not recommended).
 "set completeopt+=longest

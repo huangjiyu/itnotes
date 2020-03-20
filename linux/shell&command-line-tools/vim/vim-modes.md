@@ -64,6 +64,12 @@
 
 - `v`  （字符）可视（visual)模式，文本选择以字符为单位的。
 
+  - `viw`和`vaw`  选择当前单词（`iw` inner word只包含单词本身`aw` around word 包含单词前的空白字符）
+
+  - `vi{char}`  选择成对字符中的内容
+
+    例如`aa"xxx"zz` ，执行`vi"`选中双引号之间的内容。
+
 - `V`  可视行（visual line)模式，文本选择以行为单位。
 
 - <kbd>Ctrl</kbd><kbd>v</kbd>：可视块（visual block）模式，可以选择一个矩形内的文本。
