@@ -1,42 +1,28 @@
 #!/bin/sh
-
 #By Levin   levinit.github.io
+
 #If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+[[ -f $HOME/.bash-powerline.sh ]] && source $HOME/.bash-powerline.sh
+
 #******** Default display ********
-#===PS
-if [[ -f $HOME/.bash-powerline.sh ]]; then
-  . $HOME/.bash-powerline.sh
-else
-  function git-branch-prompt() {
-    local branch=$(git symbolic-ref HEAD 2>/dev/null | cut -d"/" -f 3)
-    [[ $branch ]] && printf " [%s]" $branch
-  }
-
-  PS1="\e[34m\u@\h\e[0;36m > \e[32m\w\e[0m\e[1;36m\$(git-branch-prompt)\e[0m \$ "
-
-  #PS1="\e[1m\u\e[0m @ \e[36m\h\e[0m |$(date +%D) > \w ] \$ "
-fi
-#===PS end
 
 innerip=$(ip addr | grep -o -P '1[^2]?[0-9]?(\.[0-9]{1,3}){3}(?=\/)')
 gateway=$(ip route | grep 'via' | cut -d ' ' -f 3 | uniq)
-
-echo -e "\e[36mHello, \e[1m$(whoami)\e[0m
-\e[1m$(uname -srm)\e[0m
+echo -e "Hi, $USER, welcome to $HOSTNAME
 \e[1;36m$(date)\e[0m
-\e[1;32m$gateway\e[0m <-- \e[1;31m$innerip\e[0m
-\e[1;34mTo grow, we all need to suffer.\e[0m
-\e[37m+++++++=====\e[0m\e[37;5m Tips \e[0m\e[37m=====+++++++\e[0m
-\e[1mrecord terminal: rec\e[0m
-\e[1mplay recordfile: play [filename]\e[0m
-\e[1mbackup configs : backupconfigs\e[0m
-\e[37m+++++=====\e[0m\e[37;5mLet's Begin\e[0m\e[37m====+++++\e[0m"
+\e[1;32m$gateway\e[0m <-- \e[1;31m$innerip\e[0m"
+
+#\e[37m+++++++=====\e[0m\e[37;5m Tips \e[0m\e[37m=====+++++++\e[0m
+#\e[1mrecord terminal: rec\e[0m
+#\e[1mplay recordfile: play [filename]\e[0m
+#\e[1mbackup configs : backupconfigs\e[0m
+#\e[37m+++++=====\e[0m\e[37;5mLet's Begin\e[0m\e[37m====+++++\e[0m"
 
 ### bash settings ###
 # don't put duplicate lines or lines starting with space in the history.
-#HISTCONTROL=ignoreboth
+HISTCONTROL=ignoreboth
 
 # append to the history file, don't overwrite it
 shopt -s histappend
@@ -51,7 +37,7 @@ bind Space:magic-space
 export EDITOR='vim'
 
 # ******** important files backup******
-configs_files=(.ssh/config .bashrc .gitconfig .vimrc .makepkg.conf)
+configs_files=(.ssh/config .bashrc .gitconfig .vimrc .makepkg.conf .bash-powerline.sh)
 path_for_bakcup=~/Documents/it/itnotes/linux/config-backup/userhome
 
 function backupconfigs() {
@@ -75,7 +61,6 @@ function restoreconfigs() {
 }
 
 # ******** alias ********
-
 # ----- device&system -----
 
 #trim for ssd
@@ -85,7 +70,6 @@ alias trim='sudo fstrim -v /home && sudo fstrim -v /'
 alias win='sudo ntfs-3g /dev/nvme0n1p4 /mnt/windata;sudo ntfs-3g /dev/nvme0n1p4 /mnt/winos'
 
 #---power---
-
 alias hs='hybrid-sleep'
 alias hn='hibernate'
 alias sp='suspend'
@@ -93,9 +77,6 @@ alias pf='poweroff'
 
 #no network save power
 alias nonetwork='sudo killall syncthing syncthing-gtk megasync smb nmb telegram-desktop workrave' #ss-qt5
-
-# powertop
-alias powertopauto='sudo powertop --auto-tune'
 
 #tlp
 alias tlpbat='sudo tlp bat'
@@ -162,6 +143,7 @@ alias xsc='sc && startx'
 # ---logs---
 # clear 2 weeks ago logs
 alias logclean='sudo journalctl --vacuum-time=1weeks'
+
 alias lastb='sudo lastb'
 alias lastlog='lastlog|grep -Ev  "\*{2}.+\*{2}"'
 
@@ -171,15 +153,13 @@ alias ls='ls --color=auto'
 alias ll='ls -lh --color=auto'
 alias la='ls -lah --color=auto'
 
-alias rm='mv -f --target-directory=$HOME/.local/share/Trash/files/'
+[[ -d $HOME/.local/share/Trash/files ]] &&  alias rm='mv -f --target-directory=$HOME/.local/share/Trash/files/'
 
 alias cp='cp -i'
 
 alias grep='grep --color'
 
 alias tree='tree -C -L 1 --dirsfirst'
-
-alias topmem='ps -ef|head -1;ps aux|sort -nrk +4|head'
 
 #---network---
 # proxychains
@@ -191,11 +171,6 @@ alias sshstart='sudo systemctl start sshd'
 # update hosts
 alias hosts='sudo curl -# -L -o /etc/hosts https://raw.githubusercontent.com/googlehosts/hosts/master/hosts-files/hosts'
 
-# privoxy 8010
-alias privoxystart='sudo systemctl start privoxy'
-alias privoxyrestart='sudo systemctl restar privoxy'
-alias privoxyrestop='sudo systemctl stop privoxy'
-
 #iconv -- file content encoding
 alias iconvgbk='iconv -f GBK -t UTF-8'
 #convmv -- filename encoding
@@ -206,13 +181,10 @@ alias tvstart='sudo systemctl start teamviewerd.service'
 
 #docker
 alias dockerstart='sudo systemctl start docker && docker ps -a'
+alias hack='sudo systemctl start docker && docker start hack && docker exec -it hack bash'
 
 #libvirtd
 alias virtstart='sudo modprobe virtio && sudo systemctl start libvirtd ebtables dnsmasq'
-
-
-#docker container
-alias hack='sudo systemctl start docker && docker start hack && docker exec -it hack bash'
 
 # nmap
 #scan alive hosts
@@ -224,11 +196,6 @@ alias geoipdata="cd /tmp && wget http://geolite.maxmind.com/download/geoip/datab
 #---vim vundle
 alias vundleinstall='git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim && echo "VundleInstall"'
 
-#-----my scripts
-
-# my scripts PATH
-[[ -d ~/Documents/scripts ]] && export PATH=~/Documents/scripts:$PATH
-
 # autojump
 [[ -s /usr/share/autojump/autojump.bash ]] && . /usr/share/autojump/autojump.bash
 
@@ -238,10 +205,10 @@ alias matrix='cmatrix'
 
 #starwar
 alias starwar='telnet towel.blinkenlights.nl'
+
 #asciinema record terminal
 alias rec='asciinema rec -i 5 terminal-`date +%Y%m%d-%H%M%S`' #record
 alias play='asciinema play'                                   #play record file
-
 
 
 #安装中文古诗词
@@ -258,17 +225,6 @@ if [[ $(which fortune 2>/dev/null) ]]; then
 #fi
 fi
 
-#-----科学上网
-#if [[ $(which brook 2>/dev/null) ]]; then
-#  if [[ -f $(which brook-client 2>/dev/null) ]]; then
-#    [[ $(pgrep brook) ]] || brook-client
-#  fi
-#fi
-# shadowsocks 1080
-alias ssstart='sudo systemctl start shadowsocks-libev@ss'
-alias ssstop='sudo systemctl stop shadowsocks-libev@ss'
-alias ssrestart='sudo systemctl restart shadowsocks-libev@ss'
-
 #-----dev-----
 # rust chinese mirror
 RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup
@@ -277,5 +233,3 @@ RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup
 #npm -g list --depth=0
 alias npmlistg='sudo npm -g list --depth=0 2>/dev/null'
 alias npmtaobao=' --registry=https://registry.npm.taobao.org'
-##
-#

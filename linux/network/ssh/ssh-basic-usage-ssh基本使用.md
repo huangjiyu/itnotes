@@ -1,15 +1,27 @@
 [TOC]
 
+# 配置文件
+
+- 服务端：一般是`/etc/ssh/sshd_config`
+
+  `-f`选项可指定配置文件
+
+- 客户端：一般是`/etc/ssh/ssh_config`（全局）或`$HOME/.ssh/config`（用户）
+
+  `-F`选项可指定配置文件
+
 # 远程登录
 
 ```bash
 ssh [-p port] user@host
-ssh -p 2333 root@10.10.1.1
+ssh -p 2333 root@host
+ssh -l user root@host
+ssh host
 ```
-- port：要登录的远程主机的端口，如果省略，则默认为22（以下示例中如无指定均表示使用22）。
+- port：要登录的远程主机的端口，如果省略则默认为22（以下示例中如无指定均表示使用22）。
 
-- user：要登录的主机上的用户名，如果省略用户名（和`@`），将会以当前用户名尝试登录ssh服务器，例如root用户执行`ssh host`同于`ssh root@host`。
-- host：要登录的主机地址
+- user：要登录的主机上的用户名，也可使用`-l`指定（此时无需`@`连接用户名和服务器地址），如果省略用户名（和`@`），将会以当前用户名尝试登录ssh服务器，例如root用户执行`ssh host`同于`ssh root@host`。
+- host：要登录的主机地址。
 
 ## 密钥登录
 
@@ -88,18 +100,20 @@ Host host1 #host1为所命名的别名
     ```shell
     #注意，跳板机的端口需要直接在地址后面添加 以冒号分隔
     ssh -J user@jum[:port] user@target -p <port>
-    #如有多个跳板机使用逗号隔开
+    #如有多个跳板机使用逗号隔开 #客户端->jump1服务器->jump2服务器->target服务器
     ssh -J user@jump1,user@jump2:2333 user@target -p 22
+    #通过server1跳跃到server2 使用X转发打开server上的firefox
+ssh -J user@server1 user@server2 -X firefox
     ```
 
     `-J`是`ProxyJump`的快捷使用方式。使用`ProxyJump`实现Jump直接跳跃登录功能：
-
+    
     ```shell
-    ssh user@target -o ProxyCommand='ssh user@jump-host -W %h:%p'
+ssh user@target -o ProxyCommand='ssh user@jump-host -W %h:%p'
     ```
 
     或者在`~/.ssh/config`中进行配置如下内容，然后使用`ssh target`直接登录到target：
-
+    
     ```shell
     Host jump #跳板机配置
         HostName 10.10.1.1
@@ -208,18 +222,28 @@ vim scp://user@host[:port]//path/to/file
 转发远程主机上应用程序的X11图形界面到本机。X转发的要求：
 
 - 服务端
-  - 使用Xorg（而非wayland），装有xauth。
-  - sshd_config配置中开启`ForwardX11 yes`。
-  - 有显示设备可用。（`$DISPLAY`有值，可查看`Xorg`的log）
+  - xorg-server，xorg-xauth，启动X服务。
+  
+  - 确保`sshd_config`关于X的配置如下：
+  
+    ```shell
+    X11Forwarding yes
+    X11DisplayOffset 10
+    X11UseLocalhost no
+    ```
 - 客户端
-  - 有X server（windows需要安装x实现如Xming等）
+  
+  - 有X 环境（windows需要安装x实现如Xming等）
 
 ```shell
-ssh -X user@host
-firefox  #打开远程主机的firefox，在本机展示图形界面
+#打开远程主机的firefox （或者登录到远程主机上再执行命令）
+ssh -X user@host firefox  #或配置ForwardX11 yes 则可不写出-X
+#或
+ssh -Y user@host firefox  #或者ForwardX11Trusted yes 则可不写出Y
 ```
 
-提示，客户端中`/etc/ssh/ssh_config`或`~/.ssh/config`设置`ForwardX11 yes`，即使不使用`-X`参数，页将默认为ssh连接开启X11转发。
+- `-X`  远程机器将被视为不受信任的客户端，本地客户端向远程机器发送命令并接收图形输出，如果某些命令违反了某些安全设置，将收到错误提示。 可在客户端ssh配置中添加
+- `-Y`  远程机器将被视为受信任的客户端。 （其他图形(X11)客户端可以从远程机器中嗅探数据（制作屏幕截图、做键盘记录和其他讨厌的东西，甚至可以更改这些数据。）
 
 # 端口转发
 

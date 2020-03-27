@@ -133,9 +133,6 @@ Plugin 'scrooloose/nerdtree'
 "语法高亮
 Plugin 'vim-syntastic/syntastic'
 
-"快速移动
-Plugin 'easymotion/vim-easymotion'
-
 "自动补全
 Plugin 'Shougo/neocomplete.vim'
 
@@ -171,22 +168,6 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
-
-"=====easymotion
-map <Leader>f{char} to move to {char}
-map  <Leader>f <Plug>(easymotion-bd-f)
-nmap <Leader>f <Plug>(easymotion-overwin-f)
-
-" s{char}{char} to move to {char}{char}
-nmap s <Plug>(easymotion-overwin-f2)
-
-" Move to line
-map <Leader>L <Plug>(easymotion-bd-jk)
-nmap <Leader>L <Plug>(easymotion-overwin-line)
-
-" Move to word
-map  <Leader>w <Plug>(easymotion-bd-w)
-nmap <Leader>w <Plug>(easymotion-overwin-w)
 
 "=====neocomplete"
 " Disable AutoComplPop.

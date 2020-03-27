@@ -309,15 +309,19 @@ Vim 支持的寄存器非常多，可使用命令`:reg` 查看所有寄存器及
 
   在指定行回放宏（对于多行播放行，可使用v模式选中多行后在命令中执行回放操作。
 
-# 其他
+# 补全
 
-变量名自动补全（在编辑状态下）
+在编辑状态下`C-`表示按下<kbd>Ctrl</kbd>加其他按键。
 
-- 在候选项中切换
-  - <kbd>Ctrl</kbd><kbd>n</kbd>
+- `C-n` 普通关键字
+- `C-x C-n`  当前缓冲区关键字
   - <kbd>Ctrl</kbd><kbd>p</kbd>
-
-
+- file name
+  - ctrl x 
+  - ctrl f
+- code
+  - ctrl x
+  - ctrl o  (enable file type checking and plugin)
 
 
 
