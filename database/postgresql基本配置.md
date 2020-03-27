@@ -16,12 +16,10 @@
    ```shell
    lang=en_US.UTF-8
    sudo chown postgres:postgres /var/lib/postgres -R
-   #不能使用root 一般使用postgres安装后创建的postgres用户进行初始化
-   su - postgres -c "initdb --locale $lang  -D  '/var/lib/postgres/data'"
-   #sudo 用户
-   #sudo -u postgres -s initdb --locale $lang  -D  '/var/lib/postgres/data'
+   #su - postgres -c "initdb --locale $lang  -D  '/var/lib/postgres/data'"
+   sudo su - postgres -c "initdb --locale $lang  -D  '/var/lib/postgres/data'"
    ```
-
+   
    初始化命令用法参看`initdb --help`。
 
 3. 启动`postgresql`服务
@@ -29,19 +27,18 @@
    如果是linux中使用systemd管理服务，则：
 
    ```shell
-   systemctl start postgresql
-   systemctl enable postgresql
+   sudo systemctl enable --now postgresql
    ```
-
-   如果在linux上使用包管理器postgresql，不建议使用initdb初始化后提示的`pg_ctl -D`命令启动服务，如果使用`pg_ctl `启动报错，根据`/var/lib/postgres/logfile`信息解决。如果提示类似
-
-   > could not create lock file/run/postgresql/...
-
-   创建该目录，授权给postgres用户，再重新启动即可：
+   
+如果在linux上使用包管理器postgresql，不建议使用initdb初始化后提示的`pg_ctl -D`命令启动服务，如果使用`pg_ctl `启动报错，根据`/var/lib/postgres/logfile`信息解决。如果提示类似
+   
+> could not create lock file/run/postgresql/...
+   
+创建该目录，授权给postgres用户，再重新启动即可：
    
    ```shell
-mkdir -p /run/postgresql/
-   chown postgres:postgres /run/postgresql
+   mkdir -p /run/postgresql/
+chown postgres:postgres /run/postgresql
    ```
 
 ## 更改默认数据库目录   
