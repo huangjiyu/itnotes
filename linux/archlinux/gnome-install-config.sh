@@ -8,7 +8,7 @@ echo '
 Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch
 [blackarch]
 SigLevel = Optional TrustAll
-Server = https://mirrors.ustc.edu.cn/blackarch/$repo/os/$arch' >> /etc/pacman.conf
+Server = https://mirrors.ustc.edu.cn/blackarch/$repo/os/$arch' >>/etc/pacman.conf
 
 sed -i "s/^#Color/Color/" /etc/pacman.conf
 [[ $(grep ILoveCandy /etc/pacman.conf) ]] || sed -i "/Color/ a ILoveCandy" /etc/pacman.conf
@@ -20,17 +20,17 @@ pacman -S archlinuxcn-keyring --noconfirm
 
 pacman -S pacman-contrib yay autojump bash-completion tmux ntfs-3g exfat-utils man-pages-zh_cn --noconfirm
 
-# fonts && input
-pacman -S ttf-dejavu adobe-source-han-sans-cn-fonts adobe-source-han-sans-kr-fonts adobe-source-han-sans-jp-fonts ttf-symbola fcitx fcitx-gtk3 fcitx-qt5 fcitx-cloudpinyin fcitx-configtool --noconfirm
+# fonts && input ##ttf-dejavu
+pacman -S otf-fira-code adobe-source-han-sans-cn-fonts adobe-source-han-sans-kr-fonts adobe-source-han-sans-jp-fonts ttf-symbola fcitx fcitx-gtk3 fcitx-qt5 fcitx-cloudpinyin fcitx-configtool --noconfirm
 
 echo "
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
-" > /etc/environment
+" >/etc/environment
 
 # gnome
-pacman -S baobab cheese eog evince file-roller gdm gedit gnome-backgrounds gnome-calculator gnome-characters gnome-color-manager gnome-control-center gnome-disk-utility gnome-font-viewer gnome-keyring gnome-screenshot gnome-session gnome-settings-daemon gnome-shell gnome-system-monitor gnome-terminal  gnome-user-share gvfs gvfs-mtp gvfs-nfs gvfs-smb mousetweaks mutter nautilus networkmanager sushi tracker tracker-miners xdg-user-dirs-gtk rygel gnome-tweaks gnome-code-assistance --noconfirm
+pacman -S baobab cheese eog evince file-roller gdm gedit gnome-backgrounds gnome-calculator gnome-characters gnome-color-manager gnome-control-center gnome-disk-utility gnome-font-viewer gnome-keyring gnome-screenshot gnome-session gnome-settings-daemon gnome-shell gnome-system-monitor gnome-terminal gnome-user-share gvfs gvfs-mtp gvfs-nfs gvfs-smb mousetweaks mutter nautilus networkmanager sushi tracker tracker-miners xdg-user-dirs-gtk rygel gnome-tweaks gnome-code-assistance --noconfirm
 
 systemctl enable gdm NetworkManager
 
@@ -43,7 +43,7 @@ XDG_DOCUMENTS_DIR="$HOME/Documents"
 XDG_MUSIC_DIR="$HOME/Music"
 XDG_PICTURES_DIR="$HOME/Pictures"
 XDG_VIDEOS_DIR="$HOME/Videos"
-' > .config/user-dirs.dirs
+' >.config/user-dirs.dirs
 
 # relevant gnome more about
 pacman -S gnome-tweaks alacarte dconf-editor gnome-software-packagekit-plugin gnome-software --noconfirm
@@ -58,7 +58,7 @@ pacman -S wget axel firefox chromium proxychains openssh vinagre teamviewer dark
 pacman -S geary telegram-desktop --noconfirm
 
 # photo/music/video
-pacman -S shotwell gimp rhythmbox spotify totem gst-plugins-ugly gst-libav grilo-plugins shotwell gimp gimp-help-zh_cn gimp-plugin-fblur gimp-plugin-fblur peek  --noconfirm
+pacman -S shotwell gimp rhythmbox spotify totem gst-plugins-ugly gst-libav grilo-plugins shotwell gimp gimp-help-zh_cn gimp-plugin-fblur gimp-plugin-fblur peek --noconfirm
 
 # software manager
 pacman -S gnome-software gnome-software-packagekit-plugin --noconfirm
@@ -96,3 +96,17 @@ pacman -S ttf-wps-fonts wps-office ydcv --noconfirm
 # neofetch
 pacman -S neofetch --noconfirm
 neofetch
+
+function plasma() {
+  pacman -S --noconfirm plasma-meta
+  #for kde discover (software center)
+  pacman -S --noconfirm packagekit-qt5
+
+  pacman -S --noconfirm powerdevil konsole dolphin
+
+  #wayland
+  pacman -S --noconfirm plasma-wayland-session
+
+  systemctl enable sddm
+
+}

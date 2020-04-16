@@ -115,6 +115,7 @@ xz -d test.xz  #解压
 - `0`  只归档打包不压缩
 - `-1`  快速压缩（低压缩率，压缩包大）
 - `-9`  高效压缩（高压缩率，压缩包小）
+- `-r`  递归压缩
 - `-e`  加密（会提示输入密码）
 - `-u`  追加文件压缩包
 
@@ -126,7 +127,7 @@ xz -d test.xz  #解压
 unzip-iconv，为unzip增加了转码补丁，可在解压缩时使用`-O`参数可指定编码格式。
 
 ```shell
-zip test.zip test  #打包
+zip -r test.zip test/  #打包 -r递归
 unzip test.zip  #解包
 #指定编码格式(如gbk)避免乱码 需要安装unzip-iconv
 unzip -O gbk test.zip

@@ -193,8 +193,9 @@ alias 'nmap-hosts'="sudo nmap -sS $(echo $gateway | cut -d '.' -f 1-3).0/24"
 #install/update geoip database
 alias geoipdata="cd /tmp && wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz && wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz && wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz && gunzip GeoIP.dat.gz && gunzip GeoIPASNum.dat.gz && gunzip GeoLiteCity.dat.gz && sudo cp GeoIP.dat GeoIPASNum.dat GeoLiteCity.dat /usr/share/GeoIP/ && cd -"
 
-#---vim vundle
-alias vundleinstall='git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim && echo "VundleInstall"'
+#---vim plugin
+#pacman -S vim-plugin --no-comfirm
+alias vimpluginstall="curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
 
 # autojump
 [[ -s /usr/share/autojump/autojump.bash ]] && . /usr/share/autojump/autojump.bash
@@ -233,3 +234,9 @@ RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup
 #npm -g list --depth=0
 alias npmlistg='sudo npm -g list --depth=0 2>/dev/null'
 alias npmtaobao=' --registry=https://registry.npm.taobao.org'
+
+#path
+export PATH=$HOME/.local/bin:$PATH
+export LD_LIBRARY_PATH=$HOME/.local/lib/:$LD_LIBRARY_PATH
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

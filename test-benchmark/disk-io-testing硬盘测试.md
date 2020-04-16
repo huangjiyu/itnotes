@@ -89,6 +89,8 @@ pacman -Ql iozone 画图。。。
   `–a `在测试大文件（大于32MB）时将自动停止使用低于64K的块大小测试。
   
   自动测试的文件较小，被测主机的内存如果比自动测试中的文件大得多，测试往往受cache/buffer影响而结果严重失真。
+
+   在进行测试前可清理系统缓存`echo 1 >/proc/sys/vm/drop_caches`。
   
   - `-A`  全面测试 没有记录块的范围限制
   
@@ -210,7 +212,7 @@ pacman -Ql iozone 画图。。。
 iozone -i 0 -i 1 -f /nfs/testfile -r 4k -s 1g -Rb ~/nfs_vol_test.xls
 
 #一个对于glusterfs的多线程测试
-iozone -w -c -e -i 0 -+n -C -r 64k -s 1g -t 8 -F /mnt/glusterfs/f{0,1,2,3,4,5,6,7,8}.ioz
+iozone -w -c -e -i 0 -+n -C -r 64k -s 1g -t 8 -F /mnt/glusterfs/f{1,2,3,4,5,6,7,8}.ioz
 
 #集群多节点测试
 nodes=(node{14..18} login{12..28}) #hosts

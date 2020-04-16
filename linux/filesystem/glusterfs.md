@@ -207,3 +207,10 @@ fstab：
 
 server可以是任意一个peer节点
 
+
+---调优
+```shell
+#以下以volume名称为ssd示例
+gluster vol set ssd client.event-threads 4
+
+```

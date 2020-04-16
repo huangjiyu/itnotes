@@ -199,9 +199,9 @@ setfacl使用：
 
   ```shell
   #示例
-  set -m u:http:r-- /srv/index.html
-  set -R u:admin:rwx /srv
-  set -m m::r-x /home
+  setfacl -m u:http:r-- /srv/index.html
+  setfacl -R u:admin:rwx /srv
+  setfacl -m m::r-x /home
   ```
 
 # 附

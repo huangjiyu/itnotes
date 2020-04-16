@@ -22,6 +22,7 @@ set clipboard^=unnamed
 
 "语法高亮 syntax highlight
 syntax on
+syntax enable
 "代码折叠 code folding
 set foldenable
 "折叠方式 folding style
@@ -36,7 +37,7 @@ set nofoldenable
 "autocmd InsertLeave * set cursorcolumn
 set cursorcolumn
 "高亮当前行 cursorline cul
-"utocmd InsertEnter * set cursorline
+autocmd InsertEnter * set cursorline
 set cursorline
 "设置高亮行的配色 cterm-原生vim ctermfg和cterbg终端vim guifg和guibg是gui的vim  取值为NONE表示自动
 "颜色可搭配light或dark，颜色：red（红），white（白），black（黑），green（绿），yellow（黄），blue（蓝），purple（紫），gray（灰），brown（棕），tan(褐色)，cyan(青色)
@@ -77,9 +78,9 @@ set mouse=a
 set magic
 
 "启动显示状态行
-set laststatus=2
+set laststatus=1
 "状态栏信息
-set statusline=[FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]\ [POS=%04l,%04v][%p%%]
+"set statusline=[FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]\ [POS=%04l,%04v][%p%%]
 "显示输入的命令
 set showcmd
 "显示标尺 在右下角显示光标位置
@@ -103,140 +104,132 @@ set fileencoding=utf-8
 "打开文件后可识别的编码格式
 set fileencodings=utf-8,gb18030,gb2312,gbk,big5
 
-"配色主题 可使用vundle安装
-"colorscheme molokai
 "背景色
 "set background=dark
 "颜色 256色
 set t_Co=256
 
-"=====vundle 插件管理工具=====
-"git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-":PluginInstall
+"===vim-plug 插件管理==="
+"pacman -S vim-plug
+"curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+call plug#begin('~/.vim/plugged')
+"~~~插件列表~~~
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+"开屏界面
+Plug 'mhinz/vim-startify'
 
-"-----vim plugins====="
 "主题
-"Plugin 'tomasr/molokai'
+Plug 'w0ng/vim-hybrid'
+Plug 'tomasr/molokai'
 
-"模糊搜索
-Plugin 'ctrlpvim/ctrlp.vim'
+"底部状态栏
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
+"缩进线
+Plug 'yggdroot/indentLine'
+
+"成对编辑
+"ds(delete arrounding) cs(change arrounding) ys(you add a surrounding)
+Plug 'tpope/vim-surround'
 
 "目录树
-Plugin 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdtree'
 
-"语法高亮
-Plugin 'vim-syntastic/syntastic'
+"模糊搜索
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
-"自动补全
-Plugin 'Shougo/neocomplete.vim'
+"快速移动
+Plug 'easymotion/vim-easymotion'
 
-call vundle#end() " required
-filetype plugin indent on " required
+"git工具
+Plug 'tpope/vim-fugitive'
 
-"=====molokai theme"
-let g:molokai_original = 1
-let g:rehash256 = 1
+"快速注释
+"注释gc 取消注释gcgc
+Plug 'tpope/vim-commentary'
 
-"=====ctrlp"
-set runtimepath^=~/.vim/bundle/ctrlp.vim
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip
-let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-  \ 'file': '\v\.(exe|so|dll|jpg|png|jpeg)$',
-  \ }
+"语法检查
+Plug 'w0rp/ale'
 
-"=====nerdtree"
+"代码格式化
+Plug 'sbdchd/neoformat'
+
+"代码补全
+"pacman -S python-pynvim " pip install pynvim 
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+
+"语言助手
+"python
+Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
+
+call plug#end()
+"===插件列表结束===
+
+"===插件设置===
+"--启用配色主题
+"colorscheme hybrid
+"--molokai
+"let g:molokai_original = 1
+"let g:rehash256 = 1
+
+"--vim-startify
+
+"--airline
+let g:airline_powerline_fonts = 1  " 支持 powerline 字体
+let g:airline#extensions#tabline#enabled = 1 "显示窗口tab和buffer
+
+"--indentLine
+let g:indentLine_char_list = ['¦', '┆', '┊']
+
+"--easymotion
+"按下ss
+nmap ss <Plug>(easymotion-s2)
+
+"--nerdtree
 "autocmd StdinReadPre * let s:std_in=1
 "autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+"ctrl+n打开侧边目录栏
 map <C-n> :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 let NERDTreeQuitOnOpen=1
 let NERDTreeShowBookmarks=1
 
-"=====syntastic"
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+"--ctrlp
+map <C-p> :Files<CR> "文件搜索
+map <C-f> :Rg<CR> "文本搜索
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+"--commentary
 
-"=====neocomplete"
-" Disable AutoComplPop.
-let g:acp_enableAtStartup = 0
-" Use neocomplete.
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplete#sources#syntax#min_keyword_length = 3
-let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+"--ale"
+let g:ale_set_highlights = 0
+"自定义error和warning图标
+let g:ale_sign_error = '✗'
+let g:ale_sign_warning = '⚡'
+"在vim自带的状态栏中整合ale
+let g:ale_statusline_format = ['✗ %d', '⚡ %d', '✔ OK']
+"显示Linter名称,出错或警告等相关信息
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+"普通模式下，sp前往上一个错误或警告，sn前往下一个错误或警告
+nmap sp <Plug>(ale_previous_wrap)
+nmap sn <Plug>(ale_next_wrap)
+"<Leader>s触发/关闭语法检查
+nmap <Leader>s :ALEToggle<CR>
+"<Leader>d查看错误或警告的详细信息
+nmap <Leader>d :ALEDetail<CR>
 
-" Define dictionary.
-let g:neocomplete#sources#dictionary#dictionaries = {
-    \ 'default' : '',
-    \ 'vimshell' : $HOME.'/.vimshell_hist',
-    \ 'scheme' : $HOME.'/.gosh_completions'
-        \ }
+"--deoplete
+let g:deoplete#enable_at_startup = 1
 
-" Define keyword.
-if !exists('g:neocomplete#keyword_patterns')
-    let g:neocomplete#keyword_patterns = {}
-endif
-let g:neocomplete#keyword_patterns['default'] = '\h\w*'
-
-" Plugin key-mappings.
-inoremap <expr><C-g>     neocomplete#undo_completion()
-inoremap <expr><C-l>     neocomplete#complete_common_string()
-
-" Recommended key-mappings.
-" <CR>: close popup and save indent.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function()
-  return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
-  " For no inserting <CR> key.
-  "return pumvisible() ? "\<C-y>" : "\<CR>"
-endfunction
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-" <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-" Close popup by <Space>.
-"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
-
-" AutoComplPop like behavior.
-let g:neocomplete#enable_auto_select = 1
-
-" Shell like behavior(not recommended).
-"set completeopt+=longest
-"let g:neocomplete#enable_auto_select = 1
-"let g:neocomplete#disable_auto_complete = 1
-"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
-
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-
-" Enable heavy omni completion.
-if !exists('g:neocomplete#sources#omni#input_patterns')
-  let g:neocomplete#sources#omni#input_patterns = {}
-endif
-"let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-"let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-"let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-
-" For perlomni.vim setting.
-" https://github.com/c9s/perlomni.vim
-let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+"--neoformat
+map <C-S-i> :Neoformat<CR>

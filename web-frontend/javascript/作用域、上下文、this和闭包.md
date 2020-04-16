@@ -57,7 +57,7 @@
 
   bind的参数可以逐个列出，也可以使用数组或arguments。
 
-  ​
+  
 
 各种情况下的this指向
 ---
@@ -68,13 +68,14 @@
 
 参看[MDN-this](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/this)
 
-- 定义时就能确定this：
-  - 箭头函数中的this -- [其定义时的外层对象](#this)
+- 定义时就能确定
+  - 箭头函数中的this：函数定义时所处的对象
+  - async函数中的this：函数定义时所处的对象
   - 显式地设置this：call/apply/bind方法的第一个参数
-  - ajax回调方法中的this -- XMLHttpRequest对象
+  - ajax回调方法中的this : XMLHttpRequest对象
 
 
-- 执行时才能确定this—指向调用它的对象
+- 执行时才能确定——指向调用它的对象
 
   注：浏览器全局对象this是window，而node中是global，严格模式下则是undefined。
 

@@ -26,6 +26,8 @@ shell扩展安装来源：
 
 - drop down terminal    下拉式终端
 
+- Coverflow Alt-Tab  alt+tab按键切换程序动画效果
+
 - topicons plus    顶部栏显示程序托盘图标
 
 - desktop icons  放置桌面图标

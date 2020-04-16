@@ -313,15 +313,28 @@ Vim 支持的寄存器非常多，可使用命令`:reg` 查看所有寄存器及
 
 在编辑状态下`C-`表示按下<kbd>Ctrl</kbd>加其他按键。
 
-- `C-n` 普通关键字
+- `C-n` 或`C-p`  普通关键字（n上一个 p下一个从提供当前文件中的关键词）
 - `C-x C-n`  当前缓冲区关键字
-  - <kbd>Ctrl</kbd><kbd>p</kbd>
-- file name
-  - ctrl x 
-  - ctrl f
-- code
-  - ctrl x
-  - ctrl o  (enable file type checking and plugin)
+- `C-x C-f`  文件名补全
+- `C-x C-i`  包含文件关键字
+- `C-x C-]`  标签文件关键字
+- `C-x C-k`  字典查找
+- `C-x C-o`  全能(Omni)补全
+
+# 插件
+
+插件管理器vim-plug、vundle等。
+
+安装完插件管理器后，根据不同插件管理器的要求在`.vimrc`中定义要安装的插件。
+
+相关站点：
+
+- [vimawesiom](https://vimawesome.com/)
+
+# 其他
+
+- 插入当前文件名`:r! echo %`
+- 插入当前文件绝对路径`:r! echo %:p`
 
 
 

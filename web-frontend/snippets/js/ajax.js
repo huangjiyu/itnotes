@@ -17,7 +17,7 @@ function ajax(info) {
   //结构传入对象
   let { type, url, data, async, resType, sendType, success, fail } = info;
   //预设值
-  type = type || 'POST';
+  type = type || 'GET';
   async = async || true;
   data = data || null;
   sendType = sendType;
@@ -87,54 +87,7 @@ function ajax(info) {
         if (fail) {
           fail(statuscode);
         }
-        serverResCode(statuscode)
+          console.log(statuscode)
       }
     }
   }
-  //常见服务器返回状态码的处理（除了200)
-  function serverResCode(status) {
-    let msg = status;
-    switch (status) {
-      case 0:
-        msg += 'XMLHttpRequest出错。（另:在请求完成前，status的值为0。）';
-        break;
-      case 400:
-        msg += '请求参数有误。';
-        break;
-      case 401:
-        msg += '当前请求需要用户验证。';
-        break;
-      case 403:
-        msg += '服务器拒绝执行。';
-        break;
-      case 404:
-        msg += '请求资源未在服务器上发现。';
-        break;
-      case 405:
-        msg += '该接口不允许使用' + type + '方法。';
-        break;
-      case 414:
-        msg +=
-          '请求的URI 长度超过了服务器能够解释的长度，因此服务器拒绝对该请求提供服务。';
-        break;
-      case 431:
-        msg += '请求头字段太大。';
-        break;
-      case 500:
-        msg += '服务器错误，服务器不知所措。';
-        break;
-      case 501:
-        msg += '此请求方法不被服务器支持且无法被处理。';
-        break;
-      case 505:
-        msg += '服务器不支持请求中所使用的HTTP协议版本';
-        break;
-      case 515:
-        msg += '客户端需要进行身份验证才能获得网络访问权限。';
-        break;
-      default:
-        break;
-    }
-    console.log(msg)
-  }
-};
