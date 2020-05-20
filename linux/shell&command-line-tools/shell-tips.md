@@ -15,6 +15,14 @@
 
 - install命令可以打印出更多更合适的debug信息，还会自动处理SElinux上下文的问题。
 
+# 自动打开gui终端并执行命令
+
+例如想打开一个gnome-terminal终端，打开终端后直接进入python交换环境：
+
+```shell
+gnome-terminal -- python
+```
+
 # 系统环境
 
 - 获取当前发行版信息
@@ -29,9 +37,22 @@
 # shell脚本相关
 
 - `$SHELL`  当前shell名称
+
 - shell文件格式化工具`shfmt`
+
 - 在脚本最前面使用`unalias -a`取消所有alias避免alias而可能造成的问题。
+
 - `$BASHPID`  当前bash的pid（非bash终端变量名不同）
+
+- 更加安全的执行脚本`set -eu`
+
+  - 避免引用未定义变量造成的问题，在脚本最上方添加：`set -u`
+
+    例如`rm -rf $xx/`，而`$xx`未定义，结果成了执行`rm -rf /`。
+
+  - 遇到错误行自行退出，在脚本最上方添加一行：`set -e`
+
+    某行执行后返回值不为0自行退出，避免继续执行其后的代码，例如某行执行的命令书写错误而执行失败。
 
 ## seq序列化输出
 

@@ -295,7 +295,7 @@
 - handbrake    视频格式转换
 - openshot    功能强大的视频编辑工具
 - lightworks   专业的视频剪辑工具
-- shotcut    视频剪辑
+- shotcut    视频剪辑工具
 - 字幕
   - aegisub
   - gnome-subtitles

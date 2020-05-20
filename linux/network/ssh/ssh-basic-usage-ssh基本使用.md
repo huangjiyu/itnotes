@@ -628,13 +628,13 @@ ssh命令中使用参数`-v`可输出详细的调试信息
 
 这里的卡或慢不包括因为网络因素问题（比如与远程主机之间的网络很差、远程主机防火墙监测时间过长）
 
-- polkit或systemd-logind问题
+- 服务端polkit或systemd-logind问题
 
   依次使用systemctl status查看sshd、systemd-logind和polkit状态，如果法有有错误信息（一般为红色），重启有问题的服务。
 
   如果问题仍然存在，重装polkit、openssh-server等软件包，重启服务和整个系统。
 
-- GSS认证问题（GSSAPIAuthentication，公共安全事务认证）
+- 服务端设置了GSS认证（GSSAPIAuthentication，公共安全事务认证）
 
   - `GSSAPIAuthentication` 是否允许使用基于 GSSAPI 的用户认证，默认值为"no"。
   - `GSSAPICleanupCredentials` 是否在用户退出登录后自动销毁用户凭证缓存，默认值为"yes"。
@@ -643,7 +643,7 @@ ssh命令中使用参数`-v`可输出详细的调试信息
   
   释掉服务端`/etc/ssh/sshd_config`中的`GSSAPI`相关行，或者设置相关行值为`no`，重启sshd服务。
   
-- DNS问题
+- 服务端设置了DNS查询
 
   服务器根据客户端IP进行DNS查询，但DNS因为（各种网络因素）查询时间过长或者查询失败。`/etc/ssh/sshd_config`中的`UseDNS`设置为`no`，重启sshd服务。
 
@@ -653,7 +653,7 @@ ssh命令中使用参数`-v`可输出详细的调试信息
 
 - `System is booting up. See pam_nologin(8)`
 
-  删除`/var/run/nologin`或`/etc/nologin`或`/var/nologin`或`/run/nologin`等。
+  删除服务端的`/var/run/nologin`或`/etc/nologin`或`/var/nologin`或`/run/nologin`等文件。
 
 - ` REMOTE HOST IDENTIFICATION HAS CHANGED` 远程主机公钥未能通过主机密钥检查
 
@@ -675,9 +675,9 @@ ssh命令中使用参数`-v`可输出详细的调试信息
   
 - `command not found` 执行远程命令提示找不到命令
 
-  使用远程主机上的**非root用户**执行位于远程主机上`/sbin`（或`/usr/sbin/`）目录下的程序时，会提示"command not found"，解决方法：
+  使用ssh服务器上的**非root用户**执行位于其`/sbin`（或`/usr/sbin/`）目录下的程序时，提示"command not found"，解决方法：
 
-  - 使用远程主机上的root用户执行
+  - 使用root用户执行
 
   - 如果该用户具有sudo权限，在命令前添加sudo执行
 
@@ -690,7 +690,7 @@ ssh命令中使用参数`-v`可输出详细的调试信息
 
 - `Permission denied (publickey,gssapi-keyex,gssapi-with-mic)`
 
-  检查`/etc/ssh/sshd_config`是否关闭了密码登录。如需开启密码登录，修改该行：
+  检查服务端`/etc/ssh/sshd_config`是否关闭了密码登录。如需开启密码登录，修改该行：
 
   ```
    PasswordAuthentication no #注释该行或值改为yes 再重启sshd服务
@@ -702,7 +702,7 @@ ssh命令中使用参数`-v`可输出详细的调试信息
 
   - `no matching key exchange method found. Their offer: diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1`
 
-    服务器ssh版本过低，不支持`diffie-hellman-group1-sha1`等协议。在`/etc/ssh/ssh_config`或用户家目录的`~/.ssh/config`中添加：
+    服务端ssh版本过低，不支持`diffie-hellman-group1-sha1`等协议，在其`/etc/ssh/ssh_config`或用户家目录的`~/.ssh/config`中添加：
 
     ```shell
   KexAlgorithms +diffie-hellman-group1-sha1
@@ -710,7 +710,7 @@ ssh命令中使用参数`-v`可输出详细的调试信息
     
   - `no compatible cipher.The server supports these cipher:  aes128-ctr,aes192-ctr,aes256-ctr`
 
-    ssh服务端不支持`aes128`等加密协议。在`/etc/ssh/ssh_config`或用户家目录的`~/.ssh/config`中添加：
+    服务端不支持`aes128`等加密协议。在`/etc/ssh/ssh_config`或用户家目录的`~/.ssh/config`中添加：
 
     ```shell
     Ciphers aes128-ctr,aes192-ctr,aes256-ctr,aes128-cbc,3des-cbc,aes192-cbc,aes256-cbc

@@ -10,6 +10,7 @@ IPMI是智能型平台管理接口（Intelligent Platform Management Interface�
 modprobe ipmi_watchdog
 modprobe ipmi_poweroff
 modprobe ipmi_devintf
+modprobe ipmi_msghandler
 modprobe ipmi_si   
 ```
 

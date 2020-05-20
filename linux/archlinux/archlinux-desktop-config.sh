@@ -18,10 +18,13 @@ pacman -Syy --noconfirm
 
 pacman -S archlinuxcn-keyring --noconfirm
 
-pacman -S pacman-contrib yay autojump bash-completion tmux ntfs-3g exfat-utils man-pages-zh_cn --noconfirm
+#zsh oh-my-zsh
+pacman -S zsh oh-my-zsh-git
+
+pacman -S pacman-contrib yay  tmux ntfs-3g exfat-utils man-pages-zh_cn --noconfirm #autojump bash-completion
 
 # fonts && input ##ttf-dejavu
-pacman -S otf-fira-code adobe-source-han-sans-cn-fonts adobe-source-han-sans-kr-fonts adobe-source-han-sans-jp-fonts ttf-symbola fcitx fcitx-gtk3 fcitx-qt5 fcitx-cloudpinyin fcitx-configtool --noconfirm
+pacman -S otf-fira-code adobe-source-han-sans-otc-fonts fcitx fcitx-gtk3 fcitx-qt5 fcitx-cloudpinyin fcitx-configtool --noconfirm
 
 echo "
 export GTK_IM_MODULE=fcitx
@@ -46,7 +49,7 @@ XDG_VIDEOS_DIR="$HOME/Videos"
 ' >.config/user-dirs.dirs
 
 # relevant gnome more about
-pacman -S gnome-tweaks alacarte dconf-editor gnome-software-packagekit-plugin gnome-software --noconfirm
+pacman -S gnome-tweaks alacarte dconf-editor --noconfirm
 
 # tools
 pacman -S gpaste --noconfirm
@@ -58,7 +61,7 @@ pacman -S wget axel firefox chromium proxychains openssh vinagre teamviewer dark
 pacman -S geary telegram-desktop --noconfirm
 
 # photo/music/video
-pacman -S shotwell gimp rhythmbox spotify totem gst-plugins-ugly gst-libav grilo-plugins shotwell gimp gimp-help-zh_cn gimp-plugin-fblur gimp-plugin-fblur peek --noconfirm
+pacman -S shotwell gimp rhythmbox spotify totem gst-plugins-ugly gst-libav grilo-plugins shotwell gimp gimp-help-zh_cn gimp-plugin-fblur peek --noconfirm
 
 # software manager
 pacman -S gnome-software gnome-software-packagekit-plugin --noconfirm
@@ -91,7 +94,9 @@ pacman -S convmv --noconfirm
 pacman -S typora gedit gedit-plugins dconf-editor git gitg code nodejs npm python-pip meld --noconfirm
 
 # office
-pacman -S ttf-wps-fonts wps-office ydcv --noconfirm
+pacman -S archlinuxcn/ttf-wps-fonts archlinuxcn/wps-office-mui-zh-cn archlinuxcn/wps-office-mime-cn archlinuxcn/wps-office-cn
+ --noconfirm
+
 
 # neofetch
 pacman -S neofetch --noconfirm

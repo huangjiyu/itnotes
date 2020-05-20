@@ -232,7 +232,8 @@ ls /sys/firmware/efi/  #如果该文件存在则表示使用UEFI启动
     mount /dev/sda1 /mnt/boot/efi    #挂载esp到/boot/efi
     ```
   
-    swap文件同上。
+
+swap文件同上。
 
 ### Legacy模式
 
@@ -272,7 +273,7 @@ Server = https://mirrors.163.com/archlinux/$repo/os/$arch
 
 ```shell
 ##base-devel 可选
-pacstrap /mnt base linux linux-firmware base-devel
+pacstrap /mnt base linux linux-firmware mkinitcpio
 ```
 ## 建立fstab文件
 
@@ -373,6 +374,8 @@ locale-gen
   
   参看[arch-wiki:sudo](https://wiki.archlinux.org/index.php/Sudo_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87))
 
+
+
 ## 时钟
 
 保留windows的用户可能还需要**参考后文[windows和linux统一使用UTC](#windows和linux统一使用UTC)** 。
@@ -403,16 +406,14 @@ linux自带的`linux-frimware`已经支持大多数驱动，如果某些设置�
   ```
 
 - 无线网络
-
-  ```shell
+```shell
   #无线网络需要安装这些工具使用wifi-menu联网
   pacman -S iw wpa_supplicant dialog netctl
   ip a  #查看到当前连接无线的网卡名字
   systemctl enable netctl-auto@网卡名字  #开机自动使用该网卡连接曾经接入的无线网络
-  ```
 ```
-  
-  参看archlinux-wiki的[netctl](#https://wiki.archlinux.org/index.php/Network_configuration_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87))和[网络配置](https://wiki.archlinux.org/index.php/Network_configuration_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87))了解更多。
+
+参看archlinux-wiki的[netctl](#https://wiki.archlinux.org/index.php/Network_configuration_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)和[网络配置](https://wiki.archlinux.org/index.php/Network_configuration_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)了解更多。
 
 ## 系统引导
 
@@ -421,13 +422,14 @@ linux自带的`linux-frimware`已经支持大多数驱动，如果某些设置�
   ```shell
   pacman -S intel-ucode   #仅intel CPU安装
   pacman -S amd-ucode  #仅amd CPU安装
+  ```
 ```
 
 - 如过要引导多系统安装（可选）
 
   ```shell
   pacman -S os-prober
-  ```
+```
 
 - 引导工具
 
@@ -464,6 +466,16 @@ linux自带的`linux-frimware`已经支持大多数驱动，如果某些设置�
 如果windows+archlinux双系统用户在重启后直接进入了Windows系统，可参看[选择grub为第一启动项](#选择grub为第一启动项) 解决。
 
 # 常用配置
+
+## swappiness
+
+[swappiness](https://wiki.archlinux.org/index.php/Swap_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#Swappiness)值代表了内核对于交换空间的喜好(或厌恶)程度。Swappiness 可以有 0 到 100 的值。设置这个参数为较低的值会减少内存的交换，从而提升一些系统上的响应度。默认值过大，调低该值很有必要。
+
+```shell
+echo 'vm.swappiness=0
+vm.vfs_cache_pressure=50'> /etc/sysctl.d/vm.conf
+```
+
 
 ## 主机名
 
@@ -560,7 +572,7 @@ pacman -S ttf-arphic-uming    #文鼎明体
 
   提示：云拼音插件不支持RIME和搜狗，且其默认使用谷歌云拼音，可在fcitx设置中选用百度。
 
-  环境变量设置——在`/etc/environment`添加：
+  环境变量设置——在`~/.pam_environment`或`/etc/environment`添加：
 
   ```shell
   export GTK_IM_MODULE=fcitx

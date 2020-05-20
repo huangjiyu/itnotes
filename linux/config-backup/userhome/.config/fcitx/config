@@ -78,7 +78,7 @@ NextPageKey=PGDN DOWN
 
 [Program]
 # Fcitx 真正启动前延迟的秒数
-DelayStart=88
+#DelayStart=0
 # 在窗口间共享状态
 # Available Value:
 # No

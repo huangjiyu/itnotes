@@ -14,3 +14,6 @@
 
   github仓库，众多人员参与编写改进的命令相关资料，以Linux下的Bash为主，也包含一些OSX和Windows命令行技巧。
 
+# linux
+
+- [linuxde.net](https://man.linuxde.net/)
