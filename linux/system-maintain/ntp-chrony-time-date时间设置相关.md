@@ -130,26 +130,30 @@ firewall-cmd --reload
 
 ```shell
 #时钟服务器 （重要）
-server 0.centos.pool.ntp.org iburst
+server 0.centos.pool.ntp.org iburst #iburst表示
 server 1.centos.pool.ntp.org iburst
 server 127.0.0.1 prefer  #使用本机时间；prefer项优先级更高
 
-#allow all #192.168.0/24 #允许的客户端（如果作为服务端时设置）
-
 #同步源的层级
 stratumweight 0
+
 #存储校准漂移信息的文件
 driftfile /var/lib/chrony/drift
-#其将启用一个内核模式，系统时间每11分钟拷贝到实时时钟（RTC）
-rtcsync
-#调整策略：当调整期大于某个阀值时，中前n次的更新中会使用step调整
-makestep 1.0 3
 
-#本地时间的层级 （将本机作为时间服务器时 该行为重要配置）
+#自动同步到实时时钟（RTC）
+rtcsync
+
+#步进调整策略（比较重要）
+#当时间误差大于某个阀值（单位：秒），前n次的更新中跳跃式校时（n为-1则表示每次如此）
+#默认情况下，chronyd根据ntp server的时间信息逐步减慢或者加快以完成时间调整（步进式校时），如果其与ntp server时间相差过大，调整时间将需要很长时间
+makestep 1.0 3  #当与服务器时间误差大于1.0秒，前3次将跳跃式校时，而后步进式校时
+
+#本地时间的层级 （将本机作为时间服务器时 重要）
 local stratum 10
 
-#允许和禁止与本机同步的客户端
-#allow 192.168.4.5
+#允许和禁止与本机同步的客户端（重要 必须配置）
+#allow  #或者 allow all 允许所有
+#allow 192.168.4.5 10.0.0.0/24
 #deny 192.168/16
 
 #允许和禁止使用命令控制的客户端
@@ -168,10 +172,13 @@ logchange 0.5
 logdir /var/log/chrony
 ```
 
-以上为服务端根据情况配置使用，作为户端，一般只设置server即可。
+以上为服务端根据情况配置使用，一般要修改几个标记有“重要”的配置行。
+作为户端，一般修改原配置文件中的server即可。一个chrony客户端配置实例：
 
 ```shell
 server master #master为服务端主机名（或使用ip地址）
+makestep 1.0 3
+rtcsync
 ```
 
 ---
@@ -190,7 +197,7 @@ watch -d "chronyc clients"
 
 常用chronyc命令对象（（可直接附在chronyc命令后，也可以进入chronyc命令行界面使用）：
 
-- makestep 手动校准
+- makestep 步进校准
 - tracking  系统时间信息
 - sources  查看同步时间源信息
   - -v  查看更详细信息
