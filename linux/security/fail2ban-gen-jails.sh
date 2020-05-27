@@ -1,11 +1,10 @@
 #!/bin/sh
-
-[[ $(id $(whoami) -u) -ne 0 ]] && echo "need root or sudo user permission." && exit
-
-if [[ $(wihich pacman 2>/dev/null) ]]; then
-  pacman -Syy fail2ban --no-confirm
+if [[ $USER != root ]]; then
+  echo "need root or sudo."
+  exit
 fi
 
+#-----
 jail_file=/etc/fail2ban/jail.d/jail.local
 
 jails=(sshd mongodb-auth mysqld-auth vsftpd)
@@ -15,6 +14,16 @@ jails=(sshd mongodb-auth mysqld-auth vsftpd)
 bandtime=8640000 #默认秒s m h d w
 findtime=6000
 maxretry=5
+
+#-----
+
+#install fail2ban
+which pacman 2>/dev/null || pacman -Syy fail2ban --no-confirm
+
+if [[ ! $(which fail2ban-server) ]]; then
+  echo "please install fail2ban"
+  exit
+fi
 
 function services_logs() {
   case $1 in
@@ -102,15 +111,17 @@ echo "delete ignore IP example: delignore_ip 8.8.8.8"
   chmod +x /usr/local/bin/{ban_ip,unban_ip,delignore_ip,ignore_ip,blacklist}
 }
 
-#====
-[[ -f $jail_file ]] && mv $jail_file $jail_file.bak
+function gen_jail_file() {
+  [[ -f $jail_file ]] && mv $jail_file $jail_file.bak
 
-echo "[DEFAULT]
+  echo "[DEFAULT]
 bantime = $bandtime
 findtime = $findtime
 maxretry = $maxretry
 " >$jail_file
+}
 
+gen_jail_file
 add_jails
 gen_scripts
 blacklist

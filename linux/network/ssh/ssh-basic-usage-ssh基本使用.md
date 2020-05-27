@@ -499,77 +499,89 @@ user@host:/remote/folder /mount/point  fuse.sshfs noauto,x-systemd.automount,_ne
 
 - 登录记录查看
 
-  - 成功记录：`lastlog`
-
-    其保存在`/var/log/secure`（或在`/etc/log/btmp`）。
-
-  - 失败记录：`lastb`
-
-    其保存在`/etc/log/btmp`。
+  - 登录历史
+    - 用户最近登录情况：`lastlog` 
+    - 登录成功的记录：`last`
+    - 登录失败的记录：`lastb`
+  - 当前登录用户
+    - 当前已登录用户列表（以及登录的用户正在执行什么操作）：`w`
+    - 当前已登录的用户信息：`who`
 
 - 防御工具
 
   - [fail2ban](https://github.com/fail2ban/fail2ban)
   - [sshguard](https://www.sshguard.net/)
 
-- IP白名单和黑名单
-  - 黑名单`/etc/hosts.deny`中添加禁止列表。
-  - 白名单`/etc/hosts.allow`中添加允许列表。
-  
-- 用户白名单和黑名单
+- root用户登录限制
 
-  在`/etc/sshd_config`配置
+  禁止root用户登录或仅允许其使用密钥登录。
 
-  - 允许
-    - 用户：`AllowUsers username`
-    - 用户组：`AllowGroups groupname`
-  - 禁止
-    - 用户：`DenyUsers username`
-    - 用户组：`DenyGroups groupname`
+  修改服务器的`/etc/ssh/sshd_config`文件中的`PermitRootLogin` 的值，值可以为：
+
+  - `no`或`yes`  禁止或允许root用户登录
+  - `prohibit-password`或者`without-password`  不允许使用密码登录（可以使用其他认证方式，例如ssh密钥）
+  - `forced-commands-only`  只能使用密钥登录 且 仅允许使用授权的命令
+
+- 禁止某些用户使用shell（以禁止其登录）
+
+  某些用户可能只用于自动启动某个守护进程，无需登录，可以修改其shell为nologin，修改方法：
+
+  - `chsh -s /sbin/nologin username`  username为用户的名字
+  - 编辑`/etc/passwd`文件，找到该用户所在行，将`/bin/bash`字样改为`/sbin/nologin`。
 
 
 - 更改默认的22端口
-  修改服务器的`/etc/ssh/sshd_config`文件中的`Port` 值为其他可用端口。
-
-  如果要监听多端口，则注释掉`Port`行，添加`ListenAddress`：
-
+  
+减少被工具批量扫描的几率。修改服务器的`/etc/ssh/sshd_config`文件中的`Port` 值为其他可用端口。
+  
+如果要监听多端口，则添加多行`Port`，如果要指定监听的地址，添加`ListenAddress`行：
+  
   ```shell
-  #Port 1234
-  ListenAddress 0.0.0.0:22
-  ListenAddress 0.0.0.0:222
-  ListenAddress 0.0.0.0:2222 
+  Port 1234
+  Port 520
+  ListenAddress 192.168.0.1
+  ListenAddress 0.0.0.0
   ```
 
+- 使用密钥而非密码登录
 
-
-- 使用非对称加密密钥
-
+  安全但不方便。
+  
   ```shell
   ssh-keygen  #或者ssh-keygen -t rsa 4096 客户机生成密钥
-  ssh-copy-d -p 23579 ip@8.8.8.8  #上传公钥到服务
+ssh-copy-id -p 23579 user@host  #上传公钥到服务器
   ```
-
+  
   注意，dsa密钥已经证实为不安全，rsa密钥位数过低也较为不安全，推荐至少4096位。
 
 
-- 用户控制
+- IP白名单和黑名单
 
-  - 禁用root登录
-    修改服务器的`/etc/ssh/sshd_config`文件中的`PermitRootLogin` 值改为no
-  - 禁止root用户使用密码登陆（可使用密钥登陆）
-    仅禁止使用密码登陆root账户， 将服务器的`/etc/ssh/sshd_config`文件中的`PermitRootLogin` 值改为`prohibit-password`
+  - 黑名单`/etc/hosts.deny`中添加禁止列表。
+  - 白名单`/etc/hosts.allow`中添加允许列表。
 
-  - 禁止登录shell
+- 用户白名单和黑名单
 
-    - 在`/etc/passwd`文件中找到该用户所在行，将`/bin/bash`字样改为`/sbin/nologin`。
+  - sshd控制，在`/etc/sshd_config`中添加配置行
 
-    - 在ssh配置文件中添加`DenyUsers username`（username即用户名，下同）。
+    - 白名单
+      - 用户：`AllowUsers username1 username2`
+      - 用户组：`AllowGroups groupname1 groupname2`
+    - 黑名单
+      - 用户：`DenyUsers username1 username2`
+      - 用户组：`DenyGroups groupname1 groupname2`
 
-    - 在`/etc/pam.d/sshd`文件中添加：
+  - PAM控制
 
-      > auth  required  pam_listfile.so  item=user  sense=allow  file=/etc/ssh/deny onerr=succeed
+    1. 在`/etc/pam.d/sshd`文件中添加：
 
-      在`/etc/ssh/dedenyhostsny`中加上要禁止的用户名
+       ```shell
+       auth  required  pam_listfile.so  item=user  sense=deny  file=/etc/ssh/deny onerr=succeed
+       ```
+
+       `sense`取值：黑名单值为`deny`，白名单值为`allow`。
+
+    2. 在`/etc/ssh/denyhosts`中添加黑名单/白名单用户，一行一个用户名。
 
 ----
 
